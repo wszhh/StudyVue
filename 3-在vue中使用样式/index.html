@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue-js/vue.js"></script>
+    <title>Document</title>
+    <style>
+        .thin {
+            font-weight: 200;
+        }
+
+        .red {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- vue-app是根容器 -->
+    <div id="app">
+        <!-- 第一种使用方式  直接传递数组 -->
+        <h1 :class="['thin','red']">这是一个h1标签</h1>
+        <!-- 使用三元运算 -->
+        <h1 :class="['thin',flag?'red':'']">这也是一个h1标签</h1>
+        <!-- 也可以写成 -->
+        <h1 :class="['thin',{'red':flag}]">这也是一个h1标签</h1>
+        <!-- 直接使用对象 -->
+        <h1 :class="classObj">这也是一个h1标签</h1>
+
+    </div>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                flag: true,
+                classObj: {
+                    red: true,
+                    thin: false
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

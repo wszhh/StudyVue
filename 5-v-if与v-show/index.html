@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue-js/vue.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- vue-app是根容器 -->
+    <div id="app">
+        <input type="button" value="切换" @click="flag=!flag">
+        <!-- 频繁切换的建议使用v-show -->
+        <div v-if="flag">我是第一个</div>
+        <div v-show="flag">我是第二个</div>
+    </div>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                flag: true
+            }
+        })
+    </script>
+</body>
+
+</html>

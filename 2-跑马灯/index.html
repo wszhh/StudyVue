@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue-js/vue.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- vue是根容器 -->
+    <div id="app">
+        <input type="button" value="浪起来" @click='lang'>
+        <input type="button" value="停止" @click='stop'>
+        <h1>{{ msg }}</h1>
+    </div>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                msg: '猥琐发育，别浪！',
+                timeId: null
+            },
+            methods: {
+                lang() {
+                    this.timeId = setInterval(() => {
+                        var start = this.msg.substring(0, 1);
+                        var end = this.msg.substring(1);
+                        this.msg = end + start;
+                    }, 400);
+                    //this.msg //在Vue实例中通过 this. 来获取或调用
+                },
+                stop() {
+                    clearInterval(this.timeId);
+                    //this.timeId = null;
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
