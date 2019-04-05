@@ -29,7 +29,7 @@
                 <tr>
                     <th>id</th>
                     <th>name</th>
-                    <th>ctime</th>
+                    <th>time</th>
                     <th>option</th>
                 </tr>
             </thead>
@@ -37,7 +37,7 @@
                 <tr v-for="item in list" :key="item.id">
                     <td v-text='item.id'></td>
                     <td v-text='item.name'>{{}} </td>
-                    <td v-text='item.ctime'></td>
+                    <td v-text='item.time'></td>
                     <td>
                         <!-- prevent组织默认行为 -->
                         <a href="" @click.prevent='del(item.id)'>删除</a>
@@ -57,23 +57,23 @@
                 list: [{
                     id: 1,
                     name: '奔驰',
-                    ctime: new Date()
+                    time: new Date()
                 }, {
                     id: 2,
                     name: '宝马',
-                    ctime: new Date()
+                    time: new Date()
                 }, {
                     id: 3,
                     name: '奥迪',
-                    ctime: new Date()
+                    time: new Date()
                 }, {
                     id: 4,
                     name: '比亚迪',
-                    ctime: new Date()
+                    time: new Date()
                 }, {
                     id: 5,
                     name: '长安',
-                    ctime: new Date()
+                    time: new Date()
                 }]
             },
             methods: {
@@ -82,7 +82,7 @@
                     var car = {
                         id: this.id,
                         name: this.name,
-                        ctime: new Date()
+                        time: new Date()
                     };
                     this.list.push(car);
                     this.id = this.name = '';
