@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>vue</name>
+    </assembly>
+    <members>
+        <member name="M:vue.Auth.Appsettings.app(System.String[])">
+            <summary>
+            封装要操作的字符
+            </summary>
+            <param name="sections"></param>
+            <returns></returns>
+        </member>
+        <member name="M:vue.Auth.JwtHelper.IssueJwt(vue.Auth.TokenModelJwt)">
+            <summary>
+            颁发JWT字符串
+            </summary>
+            <param name="tokenModel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:vue.Auth.JwtHelper.SerializeJwt(System.String)">
+            <summary>
+            解析
+            </summary>
+            <param name="jwtStr"></param>
+            <returns></returns>
+        </member>
+        <member name="T:vue.Auth.TokenModelJwt">
+            <summary>
+            令牌
+            </summary>
+        </member>
+        <member name="P:vue.Auth.TokenModelJwt.UserName">
+            <summary>
+            UserName
+            </summary>
+        </member>
+        <member name="P:vue.Auth.TokenModelJwt.Role">
+            <summary>
+            角色
+            </summary>
+        </member>
+        <member name="P:vue.Auth.TokenModelJwt.Work">
+            <summary>
+            职能
+            </summary>
+        </member>
+        <member name="T:vue.JwtTokenAuth">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="F:vue.JwtTokenAuth._next">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:vue.JwtTokenAuth.#ctor(Microsoft.AspNetCore.Http.RequestDelegate)">
+            <summary>
+            
+            </summary>
+            <param name="next"></param>
+        </member>
+        <member name="M:vue.JwtTokenAuth.Invoke(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            
+            </summary>
+            <param name="httpContext"></param>
+            <returns></returns>
+        </member>
+        <member name="M:vue.Controllers.AccountController.Login(vue.ViewModel.LoginViewModel)">
+            <summary>
+            用户登录方法
+            </summary>
+            <param name="loginViewModel"></param>
+            <returns></returns>
+        </member>
+        <member name="T:vue.Controllers.TestController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:vue.Controllers.ValuesController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:vue.Controllers.ValuesController.Post(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:vue.Controllers.ValuesController.Put(System.Int32,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:vue.Controllers.ValuesController.Delete(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+        </member>
+        <member name="T:vue.Data.DataContext">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:vue.Data.DataContext.#ctor(Microsoft.EntityFrameworkCore.DbContextOptions{vue.Data.DataContext})">
+            <summary>
+            
+            </summary>
+            <param name="options"></param>
+        </member>
+        <member name="M:vue.Startup.ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="F:vue.ApiVersions.v1">
+            <summary>
+            v1 版本
+            </summary>
+        </member>
+        <member name="F:vue.ApiVersions.v2">
+            <summary>
+            v2 版本
+            </summary>
+        </member>
+    </members>
+</doc>
