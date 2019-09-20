@@ -56,17 +56,21 @@ namespace vue.IService.Implement
         /// </summary>
         /// <param name="pagination"></param>
         /// <returns></returns>
-        public PaginationResponeViewModel<IEnumerable<Department>> GetDepartmentList(PaginationRequestViewModel pagination)
+        public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList(PaginationRequestViewModel pagination)
         {
-            return new PaginationResponeViewModel<IEnumerable<Department>>()
+            return new ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>>()
             {
-                list = db.Department.Skip(pagination.page).Take(pagination.limit),
-                total = db.Department.Count(),
+                data = new PaginationResponeViewModel<IEnumerable<Department>>()
+                {
+                    list = db.Department.Skip(pagination.page).Take(pagination.limit),
+                    total = db.Department.Count(),
+                },
+                code = (int)codes.Success,
             };
         }
 
         /// <summary>
-        /// 删
+        /// 删一个
         /// </summary>
         /// <param name="adepartment"></param>
         /// <returns></returns>
@@ -76,16 +80,16 @@ namespace vue.IService.Implement
             {
                 var department = db.Department.Where(x => x.DepartmentName == adepartment.DepartmentName).First();
                 db.Department.Remove(department);
-                db.SaveChangesAsync();
+                db.SaveChanges();
 
             }
             catch (Exception)
             {
                 return new ReturnCMDViewModel<Department>()
                 {
-                    code = (int)codes.Success,
+                    code = (int)codes.DeleteDepartmentError,
                     data = adepartment,
-                    message="删除失败"
+                    message = "删除失败"
                 };
             }
             return new ReturnCMDViewModel<Department>()
@@ -104,13 +108,18 @@ namespace vue.IService.Implement
         {
             try
             {
-                var department = db.Department.Where(x => x.DepartmentName == adepartment.DepartmentName).First();
+                var department = db.Department.Where(x => x.DepartmentId == adepartment.DepartmentId).First();
                 department.DepartmentName = adepartment.DepartmentName;
-                db.SaveChangesAsync();
-
+                db.SaveChanges();
             }
             catch (Exception)
             {
+                return new ReturnCMDViewModel<Department>()
+                {
+                    code = (int)codes.EditDepartmentError,
+                    data = adepartment,
+                    message = "编辑失败"
+                };
             }
             return new ReturnCMDViewModel<Department>()
             {

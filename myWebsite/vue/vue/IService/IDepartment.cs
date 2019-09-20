@@ -15,7 +15,7 @@ namespace vue.IService
         /// </summary>
         /// <param name="pagination"></param>
         /// <returns></returns>
-        PaginationResponeViewModel<IEnumerable<Department>> GetDepartmentList(PaginationRequestViewModel pagination);
+        ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList(PaginationRequestViewModel pagination);
 
         /// <summary>
         /// 添加一个部门

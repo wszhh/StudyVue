@@ -4,21 +4,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace vue.Areas.Identity.Data
 {
-    public class ApplicationUser : IdentityUser
+    public class NewUser : IdentityUser
     {
         public string RealName { get; set; }
+        public string Avatar { get; set; }
+        public string Photo { get; set; }
+        public string Address { get; set; }
     }
 
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<NewUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
-        }
-
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
         }
     }
 }

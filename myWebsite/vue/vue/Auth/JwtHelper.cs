@@ -56,7 +56,6 @@ namespace vue.Auth
             var jwt = new JwtSecurityToken(
                 issuer: iss,
                 claims: claims,
-                //expires: ,
                 signingCredentials: creds);
 
             var jwtHandler = new JwtSecurityTokenHandler();

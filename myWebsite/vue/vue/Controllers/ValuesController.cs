@@ -17,7 +17,7 @@ namespace vue.Controllers
     public class ValuesController : ControllerBase
     {
         // GET api/values
-        [Authorize(Policy = "Admin")]
+        [Authorize(Policy = "CEO")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {

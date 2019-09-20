@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ViewModel;
 using vue.DBModel;
 using vue.IService;
 using vue.ViewModel;
-using codes = ViewModel.StateCodes.StateCode;
 
 namespace vue.Controllers
 {
-    [Authorize(Policy = "Admin")]
+    [Authorize(Policy = "CEO")]
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class DepartmentController : Controller
@@ -28,20 +24,10 @@ namespace vue.Controllers
         /// </summary>
         /// <param name="pagination">分页参数</param>
         /// <returns></returns>
-
         [HttpPost]
-        public IActionResult GetDepartmentList([FromBody]PaginationRequestViewModel pagination)
+        public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList([FromBody]PaginationRequestViewModel pagination)
         {
-            var result = _department.GetDepartmentList(pagination);
-            return Ok(new
-            {
-                code = codes.Success,
-                data = new
-                {
-                    result.list,
-                    result.total,
-                },
-            });
+            return _department.GetDepartmentList(pagination);
         }
 
         /// <summary>
@@ -74,7 +60,7 @@ namespace vue.Controllers
         [HttpPost]
         public ReturnCMDViewModel<Department> EditDepartment([FromBody]Department adepartment)
         {
-            return _department.DeleteDepartment(adepartment);
+            return _department.EditDepartment(adepartment);
         }
     }
 }

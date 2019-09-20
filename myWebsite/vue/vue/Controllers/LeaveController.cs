@@ -22,7 +22,7 @@ namespace vue.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "Admin")]
+        [Authorize(Policy = "CEO")]
         public ReturnCMDViewModel<List<Leave>> GetLeaves()
         {
             return new ReturnCMDViewModel<List<Leave>>()

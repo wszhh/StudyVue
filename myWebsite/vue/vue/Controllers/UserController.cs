@@ -2,40 +2,36 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using vue.Auth;
 using System.Collections.Generic;
 using System;
 using Microsoft.AspNetCore.Authorization;
 using codes = ViewModel.StateCodes.StateCode;
-using ViewModel;
-using static ViewModel.StateCodes;
-using System.Collections;
+using System.IO;
+using vue.Areas.Identity.Data;
 
 namespace vue.Controllers
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    //[EnableCors("AllowSameDomain")]
+
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserController : Controller
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
-        //private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<NewUser> _signInManager;
+        private readonly UserManager<NewUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         //private readonly IConfiguration _configuration;
         //private int seconds = Convert.ToInt32(Appsettings.app(new string[] { "Exp", "Num" }));
 
-        public UserController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager
-        //IConfiguration configuration,  RoleManager<IdentityRole> roleManager
+        public UserController(SignInManager<NewUser> signInManager, UserManager<NewUser> userManager
+        //IConfiguration configuration
+        , RoleManager<IdentityRole> roleManager
         )
         {
             _signInManager = signInManager;
             _userManager = userManager;
             //_configuration = configuration;
-            //_roleManager = roleManager;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -51,28 +47,37 @@ namespace vue.Controllers
                 return View(loginViewModel);
             }
             var user = await _userManager.FindByNameAsync(loginViewModel.UserName);
-            #region 临时添加
-            //var role = await _roleManager.CreateAsync(new IdentityRole { Name = "Admin" });
-            //var role = await _userManager.AddToRoleAsync(user,"Admin"
+            #region 临时添加使用
+            //for (int i = 0; i < 6; i++)
+            //{
+            //    await _roleManager.CreateAsync(new IdentityRole { Name = "HRManager" + i.ToString() });
+            //}
+            //var role = await _userManager.AddToRoleAsync(user, "ceo");
             //var role = await _userManager.AddClaimAsync(user, new Claim("删除", "delete"));
             //var aaaa = await _roleManager.GetClaimsAsync(new IdentityRole { Name = "Admin" });
             //var role2 = await _roleManager.AddClaimAsync(new IdentityRole { Name = "Admin" }, new Claim("删除", "delete"));
+            //await Regiseter(new RegisterViewModel()
+            //{
+            //    UserName = "Admin",
+            //    Email = "Q.Q@com",
+            //    Password = "Qq111`"
+            //});
             #endregion
             if (user != null)
             {
-                var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, false, lockoutOnFailure: true);
+                var result = await _signInManager.CheckPasswordSignInAsync(user, loginViewModel.Password, true);
                 if (result.Succeeded)
                 {
                     //Token的制作与发放
-                    IList<string> Role = await _userManager.GetRolesAsync(user);
+                    string roles = RoleToStr(await _userManager.GetRolesAsync(user));
                     TokenModelJwt tokenModel = new TokenModelJwt();
                     tokenModel.ID = user.Id;
-                    tokenModel.Role = RoleToStr(Role);
+                    tokenModel.Role = roles;
                     var token = JwtHelper.IssueJwt(tokenModel);
                     return Ok(new
                     {
                         code = codes.Success,
-                        data = token
+                        data = token,
                     });
                 }
                 if (result.IsLockedOut)
@@ -101,6 +106,7 @@ namespace vue.Controllers
             if (Role != null)
             {
                 string Str = string.Empty;
+
                 foreach (string item in Role)
                 {
                     Str += item + ",";
@@ -121,7 +127,7 @@ namespace vue.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser
+                var user = new NewUser
                 {
                     UserName = registerViewModel.UserName
                 };
@@ -195,6 +201,7 @@ namespace vue.Controllers
                 if (tokenModel != null && tokenModel.ID != null)
                 {
                     var userinfo = await _userManager.FindByIdAsync(tokenModel.ID);
+                    string[] roles = RoleToStr(await _userManager.GetRolesAsync(userinfo)).Split(",");
                     if (userinfo != null)
                     {
                         return Ok(
@@ -204,7 +211,10 @@ namespace vue.Controllers
                                 data = new
                                 {
                                     name = userinfo.UserName,
-                                    avatar = @"https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"//暂时这么搞
+                                    avatar = Convert.ToBase64String(System.IO.File.ReadAllBytes($"{Directory.GetCurrentDirectory()}\\wwwroot\\Avatar\\default.jpg")),
+                                    roles,
+                                    userinfo.Photo,
+                                    userinfo.RealName
                                 }
                             }
                     ); ;

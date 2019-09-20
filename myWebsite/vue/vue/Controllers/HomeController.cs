@@ -14,6 +14,7 @@ namespace vue.Controllers
     /// </summary>
     //[EnableCors("AllowSameDomain")]
     [Route("api/[controller]/[action]")]
+    [Authorize(Policy = "CEO")]
     [ApiController]
     public class HomeController : Controller
     {
@@ -25,7 +26,6 @@ namespace vue.Controllers
         }
 
 
-        [Authorize(Policy = "Admin")]
         [HttpGet]
         public ReturnCMDViewModel<string> GetTime()
         {
@@ -36,7 +36,6 @@ namespace vue.Controllers
             };
         }
 
-        [Authorize(Policy = "Admin")]
         [HttpPost]
         public IActionResult GetStuList([FromBody]PaginationRequestViewModel pagination)
         {
@@ -52,7 +51,6 @@ namespace vue.Controllers
             });
         }
 
-        [Authorize(Policy = "Admin")]
         [HttpPost]
         public IActionResult EditStuList([FromBody]StuList stuinfo)
         {

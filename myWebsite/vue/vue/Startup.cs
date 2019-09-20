@@ -44,9 +44,10 @@ namespace vue
 
             #region 数据库、IdentityService
             services.AddDbContext<HRCContext>(options => { options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")); });
+            //services.AddDbContext<DataContext>(options => { options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")); });
             services.AddDbContext<IdentityDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("vue")));
-            services.AddDefaultIdentity<IdentityUser>().AddRoles<IdentityRole>().AddEntityFrameworkStores<IdentityDbContext>();
-            //    services.AddDefaultIdentity<ApplicationUser>()
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("vue")));
+            services.AddDefaultIdentity<NewUser>().AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
             //.AddEntityFrameworkStores<ApplicationDbContext>();
             #endregion
 
@@ -55,7 +56,7 @@ namespace vue
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Client", policy => policy.RequireRole("Client").Build());
-                options.AddPolicy("Admin", policy => policy.RequireRole("Admin").Build());
+                options.AddPolicy("Ceo", policy => policy.RequireRole("Ceo").Build());
                 options.AddPolicy("SystemOrAdmin", policy => policy.RequireRole("Admin", "System"));
             });
 

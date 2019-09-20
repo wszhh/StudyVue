@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace vue.DBModel
 {
@@ -133,6 +135,10 @@ namespace vue.DBModel
                     .HasFilter("([NormalizedUserName] IS NOT NULL)");
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Avatar)
+                    .IsUnicode(false)
+                    .HasDefaultValueSql("('\\\\wwwroot\\\\avatar\\\\default.jpg')");
 
                 entity.Property(e => e.Email).HasMaxLength(256);
 
@@ -458,6 +464,8 @@ namespace vue.DBModel
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
 
+                entity.Property(e => e.Avatar).IsUnicode(false);
+
                 entity.Property(e => e.BasePay).HasColumnType("money");
 
                 entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
@@ -466,27 +474,20 @@ namespace vue.DBModel
 
                 entity.Property(e => e.EntryTime).HasColumnType("datetime");
 
-                entity.Property(e => e.LoginName)
-                    .HasMaxLength(50)
+                entity.Property(e => e.Id)
+                    .IsRequired()
+                    .HasMaxLength(450)
                     .IsUnicode(false);
 
-                entity.Property(e => e.LoginPwd)
-                    .HasMaxLength(50)
+                entity.Property(e => e.RealName)
+                    .HasMaxLength(20)
                     .IsUnicode(false);
-
-                entity.Property(e => e.RoleId).HasColumnName("RoleID");
 
                 entity.Property(e => e.UserAddress)
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.Property(e => e.UserIphone)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserName)
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
+                entity.Property(e => e.UserBirthday).HasColumnType("datetime");
 
                 entity.Property(e => e.UserNumber)
                     .HasMaxLength(50)
