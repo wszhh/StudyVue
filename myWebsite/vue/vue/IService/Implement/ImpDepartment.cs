@@ -19,13 +19,13 @@ namespace vue.IService.Implement
         /// <returns></returns>
         public ReturnCMDViewModel<Department> AddDepartment(Department adepartment)
         {
-            if (db.Department.Select(x => x.DepartmentName == adepartment.DepartmentName).First())
+            if (db.Department.Where(x => x.DepartmentName == adepartment.DepartmentName).Any())
             {
                 return new ReturnCMDViewModel<Department>()
                 {
                     code = (int)codes.AddDepartmentError,
                     data = adepartment,
-                    message = "该部门已存在"
+                    message = $"部门\"{adepartment.DepartmentName}\"已存在,请更改后重试"
                 };
             }
             try
@@ -39,7 +39,7 @@ namespace vue.IService.Implement
                 {
                     code = (int)codes.AddDepartmentError,
                     data = adepartment,
-                    message = "该部门添加失败"
+                    message = $"部门\"{adepartment.DepartmentName}\"添加失败"
                     //message = i.Message
                 };
             }
@@ -47,6 +47,7 @@ namespace vue.IService.Implement
             {
                 code = (int)codes.Success,
                 data = adepartment,
+                message = $"部门\"{adepartment.DepartmentName}\"添加成功"
             };
 
         }
@@ -89,13 +90,14 @@ namespace vue.IService.Implement
                 {
                     code = (int)codes.DeleteDepartmentError,
                     data = adepartment,
-                    message = "删除失败"
+                    message = $"部门\"{adepartment.DepartmentName}\"删除失败"
                 };
             }
             return new ReturnCMDViewModel<Department>()
             {
                 code = (int)codes.Success,
-                data = adepartment
+                data = adepartment,
+                message = $"部门\"{adepartment.DepartmentName}\"删除成功"
             };
         }
 
@@ -118,13 +120,27 @@ namespace vue.IService.Implement
                 {
                     code = (int)codes.EditDepartmentError,
                     data = adepartment,
-                    message = "编辑失败"
+                    message = $"部门\"{adepartment.DepartmentName}\"编辑失败"
                 };
             }
             return new ReturnCMDViewModel<Department>()
             {
                 code = (int)codes.Success,
-                data = adepartment
+                data = adepartment,
+                message = $"部门\"{adepartment.DepartmentName}\"编辑成功"
+            };
+        }
+
+        /// <summary>
+        /// 不分页获取所有部门
+        /// </summary>
+        /// <returns></returns>
+        public ReturnCMDViewModel<IEnumerable<Department>> GetAllDepartments()
+        {
+            return new ReturnCMDViewModel<IEnumerable<Department>>
+            {
+                code = (int)codes.Success,
+                data = db.Department
             };
         }
     }

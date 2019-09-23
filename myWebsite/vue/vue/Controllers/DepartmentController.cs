@@ -8,7 +8,7 @@ using vue.ViewModel;
 
 namespace vue.Controllers
 {
-    [Authorize(Policy = "CEO")]
+ 
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class DepartmentController : Controller
@@ -20,10 +20,11 @@ namespace vue.Controllers
         }
 
         /// <summary>
-        /// 获取部门列表
+        /// 分页及获取部门列表
         /// </summary>
         /// <param name="pagination">分页参数</param>
         /// <returns></returns>
+        [Authorize(Policy = "CEO")]
         [HttpPost]
         public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList([FromBody]PaginationRequestViewModel pagination)
         {
@@ -31,10 +32,24 @@ namespace vue.Controllers
         }
 
         /// <summary>
+        /// 不分页获取部门列表
+        /// </summary>
+        /// <param name="pagination"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost]
+        public ReturnCMDViewModel<IEnumerable<Department>> GetAllDepartments()
+        {
+            return _department.GetAllDepartments();
+        }
+
+
+        /// <summary>
         /// 添加一个部门
         /// </summary>
         /// <param name="adepartment"></param>
         /// <returns></returns>
+        [Authorize(Policy = "CEO")]
         [HttpPost]
         public ReturnCMDViewModel<Department> AddDepartment([FromBody]Department adepartment)
         {
@@ -46,6 +61,7 @@ namespace vue.Controllers
         /// </summary>
         /// <param name="adepartment"></param>
         /// <returns></returns>
+        [Authorize(Policy = "CEO")]
         [HttpPost]
         public ReturnCMDViewModel<Department> DeleteDepartment([FromBody]Department adepartment)
         {
@@ -57,6 +73,7 @@ namespace vue.Controllers
         /// </summary>
         /// <param name="adepartment"></param>
         /// <returns></returns>
+        [Authorize(Policy = "CEO")]
         [HttpPost]
         public ReturnCMDViewModel<Department> EditDepartment([FromBody]Department adepartment)
         {

@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.Authorization;
 using codes = ViewModel.StateCodes.StateCode;
 using System.IO;
 using vue.Areas.Identity.Data;
+using vue.IService;
+using Microsoft.AspNetCore.Http;
+using static vue.Areas.Identity.Data.NewUser;
+using ViewModel;
 
 namespace vue.Controllers
 {
@@ -19,19 +23,17 @@ namespace vue.Controllers
     {
         private readonly SignInManager<NewUser> _signInManager;
         private readonly UserManager<NewUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        //private readonly RoleManager<IdentityRole> _roleManager;
         //private readonly IConfiguration _configuration;
+        private readonly IAspNetUsers _aspNetUsers;
         //private int seconds = Convert.ToInt32(Appsettings.app(new string[] { "Exp", "Num" }));
 
-        public UserController(SignInManager<NewUser> signInManager, UserManager<NewUser> userManager
-        //IConfiguration configuration
-        , RoleManager<IdentityRole> roleManager
+        public UserController(SignInManager<NewUser> signInManager, UserManager<NewUser> userManager, RoleManager<IdentityRole> roleManager, IAspNetUsers aspNetUsers
         )
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            //_configuration = configuration;
-            _roleManager = roleManager;
+            _aspNetUsers = aspNetUsers;
         }
 
         /// <summary>
@@ -40,11 +42,16 @@ namespace vue.Controllers
         /// <param name="loginViewModel"></param>
         /// <returns></returns>
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody]LoginViewModel loginViewModel)
         {
             if (!ModelState.IsValid)
             {
-                return View(loginViewModel);
+                return Ok(new
+                {
+                    code = codes.NameOrPwdError,
+                    message = "登录失败，请检查用户名或密码"
+                });
             }
             var user = await _userManager.FindByNameAsync(loginViewModel.UserName);
             #region 临时添加使用
@@ -52,20 +59,20 @@ namespace vue.Controllers
             //{
             //    await _roleManager.CreateAsync(new IdentityRole { Name = "HRManager" + i.ToString() });
             //}
-            //var role = await _userManager.AddToRoleAsync(user, "ceo");
+            //var role = await _userManager.AddToRoleAsync(user, "Staff");
             //var role = await _userManager.AddClaimAsync(user, new Claim("删除", "delete"));
             //var aaaa = await _roleManager.GetClaimsAsync(new IdentityRole { Name = "Admin" });
             //var role2 = await _roleManager.AddClaimAsync(new IdentityRole { Name = "Admin" }, new Claim("删除", "delete"));
             //await Regiseter(new RegisterViewModel()
             //{
-            //    UserName = "Admin",
-            //    Email = "Q.Q@com",
-            //    Password = "Qq111`"
+            //    UserName = "xiaoming",
+            //    Email = "Q1.Q@com",
+            //    Password = "xiaoming`"
             //});
             #endregion
             if (user != null)
             {
-                var result = await _signInManager.CheckPasswordSignInAsync(user, loginViewModel.Password, true);
+                var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, false, true);
                 if (result.Succeeded)
                 {
                     //Token的制作与发放
@@ -78,6 +85,7 @@ namespace vue.Controllers
                     {
                         code = codes.Success,
                         data = token,
+                        message = $"登录成功，欢迎\"{user.UserName}\""
                     });
                 }
                 if (result.IsLockedOut)
@@ -186,14 +194,14 @@ namespace vue.Controllers
 
 
         /// <summary>
-        /// 获取用户详情根据token
+        /// 获取用户基本信息
         /// 【无权限】
         /// </summary>
         /// <param name="token">令牌</param>
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        public async Task<ObjectResult> info(string token)
+        public async Task<IActionResult> info(string token)
         {
             if (!string.IsNullOrEmpty(token))
             {
@@ -211,15 +219,18 @@ namespace vue.Controllers
                                 data = new
                                 {
                                     name = userinfo.UserName,
-                                    avatar = Convert.ToBase64String(System.IO.File.ReadAllBytes($"{Directory.GetCurrentDirectory()}\\wwwroot\\Avatar\\default.jpg")),
+                                    avatar = PhotoToBase64String("\\wwwroot\\Avatar\\default.jpg"),
                                     roles,
-                                    userinfo.Photo,
-                                    userinfo.RealName
                                 }
                             }
                     ); ;
                     }
                 }
+                return Ok(new
+                {
+                    code = (int)codes.TokenError,
+                    message = "token无效，请重新登录！"
+                });
             }
             return Ok(new
             {
@@ -227,6 +238,48 @@ namespace vue.Controllers
                 message = "获取用户信息失败"
             });
 
+        }
+
+        /// <summary>
+        /// 获取个人数据
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize]
+        public async Task<ReturnCMDViewModel<UserInfoViewModel>> GetUserinfo(string token)
+        {
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var tokenModel = JwtHelper.SerializeJwt(token);
+                if (tokenModel != null && tokenModel.ID != null)
+                {
+                    var userInfo = await _userManager.FindByIdAsync(tokenModel.ID);
+                    return new ReturnCMDViewModel<UserInfoViewModel>()
+                    {
+                        code = (int)codes.Success,
+                        data = new UserInfoViewModel()
+                        {
+                            RealName = userInfo.RealName,
+                            DepartmentId = userInfo.DepartmentId,
+                            PhoneNumber = userInfo.PhoneNumber,
+                            Address = userInfo.Address,
+                            Salary = userInfo.Salary,
+                            Introduction = userInfo.Introduction,
+                            JoinTime = userInfo.JoinTime,
+                            Photo = PhotoToBase64String(userInfo.Photo),
+                            Birthday = userInfo.Birthday,
+                            Sex = userInfo.Sex
+                        }
+                    };
+                }
+            }
+            return new ReturnCMDViewModel<UserInfoViewModel>()
+            {
+                code = (int)codes.GetUserInfoError,
+                message = "获取个人数据失败"
+            };
         }
 
         /// <summary>
@@ -240,8 +293,153 @@ namespace vue.Controllers
             return new ReturnCMDViewModel<string>()
             {
                 code = (int)codes.Success,
+                message = "已退出"
             };
 
         }
+
+        /// <summary>
+        /// JEPG图片转BASE64
+        /// </summary>
+        /// <param name="fileRelativePath"></param>
+        /// <returns></returns>
+        private static string PhotoToBase64String(string fileRelativePath)
+        {
+            return "data:image/jpeg;base64," +
+                Convert.ToBase64String(System.IO.File.ReadAllBytes($"{Directory.GetCurrentDirectory()}{fileRelativePath}"));
+
+        }
+
+        /// <summary>
+        /// 上传头像
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ReturnCMDViewModel<IActionResult>> SetPhoto([FromForm]string token, IFormFile file)
+        {
+            if (!string.IsNullOrEmpty(token) && file.ContentType == "image/jpeg")
+            {
+                var tokenModel = JwtHelper.SerializeJwt(token);
+                if (tokenModel != null && tokenModel.ID != null)
+                {
+                    string newFilname = Guid.NewGuid().ToString();
+                    var userInfo = await _userManager.FindByIdAsync(tokenModel.ID);
+                    string savePath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\photo\\{userInfo.UserName}__{newFilname}.jpg";
+                    using (var stream = new FileStream(savePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+                    return _aspNetUsers.setUserPhoto(userInfo.Id, $"\\wwwroot\\photo\\{userInfo.UserName}__{newFilname}.jpg");
+                }
+            }
+            return new ReturnCMDViewModel<IActionResult>() { code = (int)codes.TokenOrFileError, message = "token或者文件有误" };
+        }
+
+        /// <summary>
+        /// 设置部分个人信息
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="userInfo"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public ReturnCMDViewModel<IActionResult> SetUserInfo([FromBody]UserInfoViewModel NewUserInfo)
+        {
+            string token = Request.Headers["Authorization"];
+            if (!string.IsNullOrEmpty(token) && NewUserInfo.RealName != null)
+            {
+                var tokenModel = JwtHelper.SerializeJwt(token.Substring(7));
+                if (tokenModel != null && tokenModel.ID != null)
+                {
+                    return _aspNetUsers.setUserInfo(tokenModel.ID, NewUserInfo);
+                    //var UserInfo = await _userManager.FindByIdAsync(tokenModel.ID);
+                }
+            }
+            return new ReturnCMDViewModel<IActionResult>()
+            {
+                code = (int)codes.ChangeUserInfoError,
+                message = "更改个人信息失败"
+            };
+        }
+
+        /// <summary>
+        /// 修改密码
+        /// </summary>
+        /// <param name="passwords">新旧密码</param>
+        /// <returns></returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ReturnCMDViewModel<IActionResult>> ChangePassword([FromBody]ChangePasswordViewModel passwords)
+        {
+            if (!ModelState.IsValid)
+            {
+                new ReturnCMDViewModel<IActionResult>()
+                {
+                    code = (int)codes.ChangePasswordError,
+                    message = "更改密码失败,请检查是否填写正确"
+                };
+            }
+            string token = Request.Headers["Authorization"];
+            if (!string.IsNullOrEmpty(token) && passwords.OldPassword != null)
+            {
+                var tokenModel = JwtHelper.SerializeJwt(token.Substring(7));
+                var UserInfo = await _userManager.FindByIdAsync(tokenModel.ID);
+                if (tokenModel != null && UserInfo.Id != null)
+                {
+                    var result = await _userManager.ChangePasswordAsync(UserInfo, passwords.OldPassword, passwords.NewPassword);
+                    if (result.Succeeded)
+                    {
+                        return new ReturnCMDViewModel<IActionResult>()
+                        {
+                            code = (int)codes.Success,
+                            message = "更改密码成功"
+                        };
+
+                    }
+
+                }
+            }
+            return new ReturnCMDViewModel<IActionResult>()
+            {
+                code = (int)codes.ChangePasswordError,
+                message = "更改密码失败，请检查原密码是否正确"
+            };
+        }
+
+        /// <summary>
+        /// 获取同事列表
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> getColleaguesList([FromBody]PaginationRequestViewModel pagination)
+        {
+            return new ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()
+            {
+                code = (int)codes.Success,
+                data = _aspNetUsers.getColleaguesList(pagination),
+            };
+        }
+
+        /// <summary>
+        /// 查询同事列表
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> FindColleagueByName([FromBody]PaginationRequestViewModel<string> pagination)
+        {
+            return new ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()
+            {
+                code = (int)codes.Success,
+                data = _aspNetUsers.findColleagueByName(pagination),
+            };
+        }
+
+
     }
 }

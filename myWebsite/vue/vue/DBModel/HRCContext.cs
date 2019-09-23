@@ -93,6 +93,10 @@ namespace vue.DBModel
 
                 entity.HasIndex(e => e.UserId);
 
+                entity.Property(e => e.LoginProvider).HasMaxLength(128);
+
+                entity.Property(e => e.ProviderKey).HasMaxLength(128);
+
                 entity.Property(e => e.UserId).IsRequired();
 
                 entity.HasOne(d => d.User)
@@ -119,6 +123,10 @@ namespace vue.DBModel
             {
                 entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
 
+                entity.Property(e => e.LoginProvider).HasMaxLength(128);
+
+                entity.Property(e => e.Name).HasMaxLength(128);
+
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.AspNetUserTokens)
                     .HasForeignKey(d => d.UserId);
@@ -136,15 +144,17 @@ namespace vue.DBModel
 
                 entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.Avatar)
-                    .IsUnicode(false)
-                    .HasDefaultValueSql("('\\\\wwwroot\\\\avatar\\\\default.jpg')");
+                entity.Property(e => e.Birthday).HasDefaultValueSql("('0001-01-01T00:00:00.0000000')");
 
                 entity.Property(e => e.Email).HasMaxLength(256);
+
+                entity.Property(e => e.JoinTime).HasDefaultValueSql("('0001-01-01T00:00:00.0000000')");
 
                 entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
+
+                entity.Property(e => e.Salary).HasDefaultValueSql("((0.000000000000000e+000))");
 
                 entity.Property(e => e.UserName).HasMaxLength(256);
             });

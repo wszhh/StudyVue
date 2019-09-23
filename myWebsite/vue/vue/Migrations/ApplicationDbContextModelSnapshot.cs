@@ -8,7 +8,7 @@ using vue.Areas.Identity.Data;
 
 namespace vue.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(NewUser.ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -144,13 +144,21 @@ namespace vue.Migrations
 
                     b.Property<string>("Avatar");
 
+                    b.Property<DateTime>("Birthday");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
+
+                    b.Property<int>("DepartmentId");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed");
+
+                    b.Property<string>("Introduction");
+
+                    b.Property<DateTime>("JoinTime");
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -172,7 +180,11 @@ namespace vue.Migrations
 
                     b.Property<string>("RealName");
 
+                    b.Property<double>("Salary");
+
                     b.Property<string>("SecurityStamp");
+
+                    b.Property<int>("Sex");
 
                     b.Property<bool>("TwoFactorEnabled");
 

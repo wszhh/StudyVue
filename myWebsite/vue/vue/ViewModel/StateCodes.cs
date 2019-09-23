@@ -40,6 +40,22 @@
             /// 部门编辑失败
             /// </summary>
             EditDepartmentError = 10008,
+            /// <summary>
+            /// token或者文件有误
+            /// </summary>
+            TokenOrFileError = 10009,
+            /// <summary>
+            /// 更改个人信息失败
+            /// </summary>
+            ChangeUserInfoError = 10010,
+            /// <summary>
+            /// token或者信息格式不正确
+            /// </summary>
+            TokenOrInfoError = 10011,
+            /// <summary>
+            /// 更改密码失败
+            /// </summary>
+            ChangePasswordError = 10012,
 
         }
 

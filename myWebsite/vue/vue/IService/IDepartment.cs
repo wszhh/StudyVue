@@ -11,11 +11,18 @@ namespace vue.IService
     public interface IDepartment
     {
         /// <summary>
-        /// 获取部门
+        /// 分页及获取部门列表
         /// </summary>
         /// <param name="pagination"></param>
         /// <returns></returns>
         ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList(PaginationRequestViewModel pagination);
+
+        /// <summary>
+        /// 获取部门列表
+        /// </summary>
+        /// <param name="pagination"></param>
+        /// <returns></returns>
+        ReturnCMDViewModel<IEnumerable<Department>> GetAllDepartments();
 
         /// <summary>
         /// 添加一个部门
@@ -30,6 +37,7 @@ namespace vue.IService
         /// <param name="adepartment"></param>
         /// <returns></returns>
         ReturnCMDViewModel<Department> DeleteDepartment(Department adepartment);
+
         /// <summary>
         /// 改
         /// </summary>

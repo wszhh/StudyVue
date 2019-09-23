@@ -28,7 +28,16 @@ namespace vue.DBModel
         public DateTimeOffset? LockoutEnd { get; set; }
         public bool LockoutEnabled { get; set; }
         public int AccessFailedCount { get; set; }
+        public string RealName { get; set; }
         public string Avatar { get; set; }
+        public string Photo { get; set; }
+        public string Address { get; set; }
+        public int DepartmentId { get; set; }
+        public string Introduction { get; set; }
+        public DateTime JoinTime { get; set; }
+        public double Salary { get; set; }
+        public DateTime Birthday { get; set; }
+        public int Sex { get; set; }
 
         public virtual ICollection<AspNetUserClaims> AspNetUserClaims { get; set; }
         public virtual ICollection<AspNetUserLogins> AspNetUserLogins { get; set; }

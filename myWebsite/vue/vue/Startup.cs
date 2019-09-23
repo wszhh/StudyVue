@@ -15,6 +15,7 @@ using vue.Areas.Identity.Data;
 using vue.DBModel;
 using vue.IService;
 using vue.IService.Implement;
+using static vue.Areas.Identity.Data.NewUser;
 
 namespace vue
 {
@@ -40,12 +41,13 @@ namespace vue
             services.AddSingleton<ILeave, ImpLeave>();
             services.AddSingleton<IStuList, ImpStuList>();
             services.AddSingleton<IDepartment, ImpDepartment>();
+            services.AddSingleton<IAspNetUsers, ImpAspNetUsers>();
             #endregion
 
             #region 数据库、IdentityService
             services.AddDbContext<HRCContext>(options => { options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")); });
             //services.AddDbContext<DataContext>(options => { options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")); });
-            services.AddDbContext<IdentityDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("vue")));
+            //services.AddDbContext<IdentityDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("vue")));
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("vue")));
             services.AddDefaultIdentity<NewUser>().AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
             //.AddEntityFrameworkStores<ApplicationDbContext>();
@@ -55,9 +57,12 @@ namespace vue
             // 然后这么写 [Authorize(Policy = "Admin")]
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("Client", policy => policy.RequireRole("Client").Build());
                 options.AddPolicy("Ceo", policy => policy.RequireRole("Ceo").Build());
-                options.AddPolicy("SystemOrAdmin", policy => policy.RequireRole("Admin", "System"));
+                options.AddPolicy("HRManager", policy => policy.RequireRole("HRManager").Build());
+                options.AddPolicy("D.Manager", policy => policy.RequireRole("D.Manager").Build());
+                options.AddPolicy("HRAssistant", policy => policy.RequireRole("Ceo").Build());
+                options.AddPolicy("Staff", policy => policy.RequireRole("Staff").Build());
+                options.AddPolicy("CeoOrHRManager", policy => policy.RequireRole("Ceo", "HRManager"));
             });
 
             #endregion
@@ -149,17 +154,16 @@ namespace vue
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
-                options.Password.RequiredLength = 0;
+                options.Password.RequiredLength = 6;
                 options.Password.RequiredUniqueChars = 0;
 
                 // Lockout settings.
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.MaxFailedAccessAttempts = 10;
                 options.Lockout.AllowedForNewUsers = true;
 
                 // User settings.
-                options.User.AllowedUserNameCharacters =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
                 options.User.RequireUniqueEmail = false;
             });
 
