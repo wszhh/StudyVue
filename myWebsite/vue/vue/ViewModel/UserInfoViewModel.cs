@@ -14,5 +14,6 @@ namespace vue.ViewModel
         public string RealName { get; set; }
         public double Salary { get; set; }
         public int Sex { get; set; }
+        public string Id { get; set; }
     }
 }

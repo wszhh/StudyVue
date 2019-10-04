@@ -56,6 +56,14 @@
             /// 更改密码失败
             /// </summary>
             ChangePasswordError = 10012,
+            /// <summary>
+            /// 添加员工失败
+            /// </summary>
+            AddStaffError = 10013,
+            /// <summary>
+            /// 用户名已存在
+            /// </summary>
+            UserNameError = 10014,
 
         }
 

@@ -14,7 +14,7 @@ namespace vue.Controllers
     /// </summary>
     //[EnableCors("AllowSameDomain")]
     [Route("api/[controller]/[action]")]
-    [Authorize(Policy = "CEO")]
+    //[Authorize(Policy = "CEO")]
     [ApiController]
     public class HomeController : Controller
     {
@@ -26,6 +26,7 @@ namespace vue.Controllers
         }
 
 
+        [Authorize(Policy = "Home_Get")]
         [HttpGet]
         public ReturnCMDViewModel<string> GetTime()
         {

@@ -11,19 +11,24 @@ using System.IO;
 using vue.Areas.Identity.Data;
 using vue.IService;
 using Microsoft.AspNetCore.Http;
-using static vue.Areas.Identity.Data.NewUser;
 using ViewModel;
+using System.Linq;
+using System.Security.Claims;
 
 namespace vue.Controllers
 {
+
 
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserController : Controller
     {
+        private const string DefaultUserPhoto = "\\wwwroot\\Photo\\default.jpg";
+        private const string DefaultUserAvatar = "\\wwwroot\\Avatar\\default.jpg";
         private readonly SignInManager<NewUser> _signInManager;
         private readonly UserManager<NewUser> _userManager;
-        //private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+
         //private readonly IConfiguration _configuration;
         private readonly IAspNetUsers _aspNetUsers;
         //private int seconds = Convert.ToInt32(Appsettings.app(new string[] { "Exp", "Num" }));
@@ -34,9 +39,26 @@ namespace vue.Controllers
             _signInManager = signInManager;
             _userManager = userManager;
             _aspNetUsers = aspNetUsers;
+            _roleManager = roleManager;
         }
 
         /// <summary>
+        #region 临时添加使用
+        //for (int i = 0; i < 6; i++)
+        //{
+        //    await _roleManager.CreateAsync(new IdentityRole { Name = "HRManager" + i.ToString() });
+        //}
+        //var role = await _userManager.AddToRoleAsync(user, "Staff");
+        //var role = await _userManager.AddClaimAsync(user, new Claim("删除", "delete"));
+        //var aaaa = await _roleManager.GetClaimsAsync(new IdentityRole { Name = "Admin" });
+        //var role2 = await _roleManager.AddClaimAsync(new IdentityRole { Name = "Admin" }, new Claim("删除", "delete"));
+        //await Regiseter(new RegisterViewModel()
+        //{
+        //    UserName = "xiaoming",
+        //    Email = "Q1.Q@com",
+        //    Password = "xiaoming`"
+        //});
+        #endregion
         /// 用户登录方法
         /// </summary>
         /// <param name="loginViewModel"></param>
@@ -45,6 +67,14 @@ namespace vue.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody]LoginViewModel loginViewModel)
         {
+            //await Regiseter(new RegisterViewModel()
+            //{
+            //    UserName = "zhangwu",
+            //    Email = "Q2.Q@com",
+            //    Password = "Qq111`"
+            //});
+            var Ceo = await _roleManager.FindByNameAsync("Ceo");
+            await _roleManager.AddClaimAsync(Ceo, new Claim("Staff", "Get"));
             if (!ModelState.IsValid)
             {
                 return Ok(new
@@ -54,32 +84,18 @@ namespace vue.Controllers
                 });
             }
             var user = await _userManager.FindByNameAsync(loginViewModel.UserName);
-            #region 临时添加使用
-            //for (int i = 0; i < 6; i++)
-            //{
-            //    await _roleManager.CreateAsync(new IdentityRole { Name = "HRManager" + i.ToString() });
-            //}
-            //var role = await _userManager.AddToRoleAsync(user, "Staff");
-            //var role = await _userManager.AddClaimAsync(user, new Claim("删除", "delete"));
-            //var aaaa = await _roleManager.GetClaimsAsync(new IdentityRole { Name = "Admin" });
-            //var role2 = await _roleManager.AddClaimAsync(new IdentityRole { Name = "Admin" }, new Claim("删除", "delete"));
-            //await Regiseter(new RegisterViewModel()
-            //{
-            //    UserName = "xiaoming",
-            //    Email = "Q1.Q@com",
-            //    Password = "xiaoming`"
-            //});
-            #endregion
             if (user != null)
             {
                 var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, false, true);
                 if (result.Succeeded)
                 {
+
                     //Token的制作与发放
-                    string roles = RoleToStr(await _userManager.GetRolesAsync(user));
+                    string roleName = (await _userManager.GetRolesAsync(user))[0];
+                    var ClaimResult = await _roleManager.GetClaimsAsync(await _roleManager.FindByNameAsync(roleName));
                     TokenModelJwt tokenModel = new TokenModelJwt();
                     tokenModel.ID = user.Id;
-                    tokenModel.Role = roles;
+                    tokenModel.Claims = ClaimResult;
                     var token = JwtHelper.IssueJwt(tokenModel);
                     return Ok(new
                     {
@@ -143,6 +159,7 @@ namespace vue.Controllers
                 if (RegisterUserResult.Succeeded)
                 {
                     var SetEmailResult = await _userManager.SetEmailAsync(user, registerViewModel.Email);
+                    _aspNetUsers.setUserPhoto(user.Id, DefaultUserPhoto);//默认照片
                     return Ok("1");
                 }
             }
@@ -219,11 +236,11 @@ namespace vue.Controllers
                                 data = new
                                 {
                                     name = userinfo.UserName,
-                                    avatar = PhotoToBase64String("\\wwwroot\\Avatar\\default.jpg"),
+                                    avatar = PhotoToBase64String(DefaultUserAvatar),
                                     roles,
                                 }
                             }
-                    ); ;
+                    );
                     }
                 }
                 return Ok(new
@@ -246,7 +263,7 @@ namespace vue.Controllers
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = "UserInfo_Get")]
         public async Task<ReturnCMDViewModel<UserInfoViewModel>> GetUserinfo(string token)
         {
 
@@ -311,21 +328,49 @@ namespace vue.Controllers
         }
 
         /// <summary>
-        /// 上传头像
+        /// 上传照片
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost]
-        [AllowAnonymous]
-        public async Task<ReturnCMDViewModel<IActionResult>> SetPhoto([FromForm]string token, IFormFile file)
+        [Authorize]
+        public async Task<ReturnCMDViewModel<IActionResult>> SetPhoto([FromForm]IFormFile file)
         {
+            string token = Request.Headers["Authorization"];
             if (!string.IsNullOrEmpty(token) && file.ContentType == "image/jpeg")
             {
-                var tokenModel = JwtHelper.SerializeJwt(token);
+                var tokenModel = JwtHelper.SerializeJwt(token.Substring(7));
                 if (tokenModel != null && tokenModel.ID != null)
                 {
                     string newFilname = Guid.NewGuid().ToString();
                     var userInfo = await _userManager.FindByIdAsync(tokenModel.ID);
+                    string savePath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\photo\\{userInfo.UserName}__{newFilname}.jpg";
+                    using (var stream = new FileStream(savePath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+                    return _aspNetUsers.setUserPhoto(userInfo.Id, $"\\wwwroot\\photo\\{userInfo.UserName}__{newFilname}.jpg");
+                }
+            }
+            return new ReturnCMDViewModel<IActionResult>() { code = (int)codes.TokenOrFileError, message = "token或者文件有误" };
+        }
+
+
+        /// <summary>
+        /// 添加员工照片
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public async Task<ReturnCMDViewModel<IActionResult>> SetStaffphoto([FromForm]string UserName, IFormFile file)
+        {
+            if (!string.IsNullOrEmpty(UserName) && file.ContentType == "image/jpeg")
+            {
+                var userInfo = await _userManager.FindByNameAsync(UserName);
+                if (userInfo != null)
+                {
+                    string newFilname = Guid.NewGuid().ToString();
                     string savePath = $"{Directory.GetCurrentDirectory()}\\wwwroot\\photo\\{userInfo.UserName}__{newFilname}.jpg";
                     using (var stream = new FileStream(savePath, FileMode.Create))
                     {
@@ -344,7 +389,7 @@ namespace vue.Controllers
         /// <param name="userInfo"></param>
         /// <returns></returns>
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(Policy = "UserInfo_Set")]
         public ReturnCMDViewModel<IActionResult> SetUserInfo([FromBody]UserInfoViewModel NewUserInfo)
         {
             string token = Request.Headers["Authorization"];
@@ -414,8 +459,8 @@ namespace vue.Controllers
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize]
-        public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> getColleaguesList([FromBody]PaginationRequestViewModel pagination)
+        [Authorize(Policy = "Colleague_Get")]
+        public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> GetColleaguesList([FromBody]PaginationRequestViewModel pagination)
         {
             return new ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()
             {
@@ -423,14 +468,13 @@ namespace vue.Controllers
                 data = _aspNetUsers.getColleaguesList(pagination),
             };
         }
-
         /// <summary>
         /// 查询同事列表
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "Colleague_Get")]
         public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> FindColleagueByName([FromBody]PaginationRequestViewModel<string> pagination)
         {
             return new ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()
@@ -439,6 +483,89 @@ namespace vue.Controllers
                 data = _aspNetUsers.findColleagueByName(pagination),
             };
         }
+
+
+        /// <summary>
+        /// 获取同事列表
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Policy = "Staff_Get")]
+        public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> GetStaffList([FromBody]PaginationRequestViewModel pagination)
+        {
+            return new ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()
+            {
+                code = (int)codes.Success,
+                data = _aspNetUsers.getStaffList(pagination),
+            };
+        }
+
+
+        /// <summary>
+        /// 添加员工
+        /// </summary>
+        /// <param name="registerViewModel"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Policy = "Staff_Add")]
+        public async Task<ReturnCMDViewModel<IActionResult>> AddStaff([FromBody] NewUser newUser)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new NewUser
+                {
+                    UserName = newUser.UserName
+                };
+                var RegisterUserResult = await _userManager.CreateAsync(user, "Qq123.");
+                if (RegisterUserResult.Succeeded)
+                {
+                    newUser.Photo = DefaultUserPhoto;
+                    newUser.Avatar = DefaultUserAvatar;
+                    //用户创建成功后开始添加个人资料
+                    return _aspNetUsers.setStaffInfo(newUser.UserName, newUser);
+                }
+            }
+            return new ReturnCMDViewModel<IActionResult>() { code = (int)codes.AddStaffError, message = "添加失败" };
+        }
+
+        /// <summary>
+        /// 检查用户名是否存在
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CheckUserName([FromBody]NewUser user)
+        {
+            if (!string.IsNullOrEmpty(user.UserName))
+            {
+                if (await _userManager.FindByNameAsync(user.UserName) != null)
+                {
+                    return Ok(new
+                    {
+                        code = (int)codes.Success,
+                        data = 19999//只能这么搞了，他前端那个框架会拦截code!=20000的，不能直接获取code的再判断，只能从data传了
+                    });
+                }
+                else
+                {
+                    return Ok(new
+                    {
+                        code = (int)codes.Success,
+                    });
+                }
+            }
+            return Ok(new
+            {
+                code = (int)codes.UserNameError,
+                message = "用户名为空"
+            });
+        }
+
+
+
 
 
     }

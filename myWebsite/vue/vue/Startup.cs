@@ -63,6 +63,17 @@ namespace vue
                 options.AddPolicy("HRAssistant", policy => policy.RequireRole("Ceo").Build());
                 options.AddPolicy("Staff", policy => policy.RequireRole("Staff").Build());
                 options.AddPolicy("CeoOrHRManager", policy => policy.RequireRole("Ceo", "HRManager"));
+                //主页
+                options.AddPolicy("Home_Get", policy => policy.RequireClaim("Home_Get", "Get"));
+                //员工资料管理
+                //-个人信息
+                options.AddPolicy("UserInfo_Get", policy => policy.RequireClaim("UserInfo", "Get"));
+                options.AddPolicy("UserInfo_Set", policy => policy.RequireClaim("UserInfo", "Set"));
+                //-查找同事
+                options.AddPolicy("Colleague_Get", policy => policy.RequireClaim("Colleague", "Get"));
+                //-员工管理
+                options.AddPolicy("Staff_Get", policy => policy.RequireClaim("Staff", "Get"));
+                options.AddPolicy("Staff_Add", policy => policy.RequireClaim("Staff", "Add"));
             });
 
             #endregion
@@ -169,7 +180,7 @@ namespace vue
 
             #endregion
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

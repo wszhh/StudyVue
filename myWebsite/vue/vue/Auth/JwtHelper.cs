@@ -47,7 +47,9 @@ namespace vue.Auth
 
             // 可以将一个用户的多个角色全部赋予；
             // 作者：DX 提供技术支持；
-            claims.AddRange(tokenModel.Role.Split(',').Select(s => new Claim(ClaimTypes.Role, s)));
+            //claims.AddRange(tokenModel.Role.Split(',').Select(s => new Claim(ClaimTypes.Role, s)));
+            claims.AddRange(tokenModel.Claims.Select(x => new Claim(x.Type, x.Value)));
+            //claims.Add(new Claim("Home_Get", "Home_Gett"));
 
             //秘钥 (SymmetricSecurityKey 对安全性的要求，密钥的长度太短会报出异常)
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
@@ -110,9 +112,8 @@ namespace vue.Auth
         /// 角色
         /// </summary>
         public string Role { get; set; }
-        /// <summary>
-        /// 职能
-        /// </summary>
-        public string Work { get; set; }
+        public string ClaimType { get; set; }
+        public string ClaimValue { get; set; }
+        public IList<Claim> Claims { get; set; }
     }
 }
