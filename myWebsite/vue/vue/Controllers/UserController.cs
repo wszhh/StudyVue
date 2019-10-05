@@ -12,8 +12,8 @@ using vue.Areas.Identity.Data;
 using vue.IService;
 using Microsoft.AspNetCore.Http;
 using ViewModel;
-using System.Linq;
 using System.Security.Claims;
+using System.Linq;
 
 namespace vue.Controllers
 {
@@ -21,7 +21,7 @@ namespace vue.Controllers
 
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class UserController : Controller
+    public class UserController : ControllerBase
     {
         private const string DefaultUserPhoto = "\\wwwroot\\Photo\\default.jpg";
         private const string DefaultUserAvatar = "\\wwwroot\\Avatar\\default.jpg";
@@ -38,8 +38,8 @@ namespace vue.Controllers
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            _aspNetUsers = aspNetUsers;
             _roleManager = roleManager;
+            _aspNetUsers = aspNetUsers;
         }
 
         /// <summary>
@@ -73,8 +73,8 @@ namespace vue.Controllers
             //    Email = "Q2.Q@com",
             //    Password = "Qq111`"
             //});
-            var Ceo = await _roleManager.FindByNameAsync("Ceo");
-            await _roleManager.AddClaimAsync(Ceo, new Claim("Staff", "Get"));
+            //var Ceo = await _roleManager.FindByNameAsync("Ceo");
+            //await _roleManager.AddClaimAsync(Ceo, new Claim("Department", "Get"));
             if (!ModelState.IsValid)
             {
                 return Ok(new
@@ -91,8 +91,8 @@ namespace vue.Controllers
                 {
 
                     //Token的制作与发放
-                    string roleName = (await _userManager.GetRolesAsync(user))[0];
-                    var ClaimResult = await _roleManager.GetClaimsAsync(await _roleManager.FindByNameAsync(roleName));
+                    var roleName = (await _userManager.GetRolesAsync(user));
+                    IList<Claim> ClaimResult = await _roleManager.GetClaimsAsync(await _roleManager.FindByNameAsync(roleName.Count == 0 ? "Staff" : roleName[0]));
                     TokenModelJwt tokenModel = new TokenModelJwt();
                     tokenModel.ID = user.Id;
                     tokenModel.Claims = ClaimResult;
@@ -190,11 +190,11 @@ namespace vue.Controllers
                 var user = await _userManager.FindByIdAsync(tokenModel.ID);
                 if (user != null)
                 {
-                    IList<string> Role = await _userManager.GetRolesAsync(user);
-                    TokenModelJwt refreshTokenModel = new TokenModelJwt();
-                    refreshTokenModel.ID = user.Id;
-                    refreshTokenModel.Role = RoleToStr(Role);
-                    var token = JwtHelper.IssueJwt(refreshTokenModel);
+                    string roleName = (await _userManager.GetRolesAsync(user))[0];
+                    IList<Claim> ClaimResult = await _roleManager.GetClaimsAsync(await _roleManager.FindByNameAsync(roleName));
+                    tokenModel.ID = user.Id;
+                    tokenModel.Claims = ClaimResult;
+                    var token = JwtHelper.IssueJwt(tokenModel);
                     return Ok(new
                     {
                         data = token,
@@ -212,21 +212,33 @@ namespace vue.Controllers
 
         /// <summary>
         /// 获取用户基本信息
-        /// 【无权限】
         /// </summary>
         /// <param name="token">令牌</param>
         /// <returns></returns>
         [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> info(string token)
+        [Authorize]
+        public async Task<IActionResult> Info(string token)
         {
             if (!string.IsNullOrEmpty(token))
             {
                 var tokenModel = JwtHelper.SerializeJwt(token);
                 if (tokenModel != null && tokenModel.ID != null)
                 {
+                    List<string> roles = new List<string>();
                     var userinfo = await _userManager.FindByIdAsync(tokenModel.ID);
-                    string[] roles = RoleToStr(await _userManager.GetRolesAsync(userinfo)).Split(",");
+                    IList<string> roleName = await _userManager.GetRolesAsync(userinfo);
+                    IList<Claim> ClaimResult = await _roleManager.GetClaimsAsync(await _roleManager.FindByNameAsync(roleName.Count == 0 ? "Staff" : roleName[0]));
+                    if (ClaimResult.Count() > 0)
+                    {
+                        foreach (Claim item in ClaimResult)
+                        {
+                            roles.Add(item.Type + "_" + item.Value);
+                        }
+                    }
+                    else
+                    {
+                        roles.Add("No");
+                    }
                     if (userinfo != null)
                     {
                         return Ok(

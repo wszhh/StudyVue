@@ -58,17 +58,15 @@ namespace vue.IService.Implement
         /// <param name="pagination"></param>
         /// <returns></returns>
         public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList(PaginationRequestViewModel pagination)
-        {
-            return new ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>>()
-            {
-                data = new PaginationResponeViewModel<IEnumerable<Department>>()
-                {
-                    list = db.Department.Skip(pagination.page).Take(pagination.limit),
-                    total = db.Department.Count(),
-                },
-                code = (int)codes.Success,
-            };
-        }
+         => new ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>>()
+         {
+             data = new PaginationResponeViewModel<IEnumerable<Department>>()
+             {
+                 list = db.Department.Skip(pagination.page).Take(pagination.limit),
+                 total = db.Department.Count(),
+             },
+             code = (int)codes.Success,
+         };
 
         /// <summary>
         /// 删一个
@@ -135,13 +133,10 @@ namespace vue.IService.Implement
         /// 不分页获取所有部门
         /// </summary>
         /// <returns></returns>
-        public ReturnCMDViewModel<IEnumerable<Department>> GetAllDepartments()
+        public ReturnCMDViewModel<IEnumerable<Department>> GetAllDepartments() => new ReturnCMDViewModel<IEnumerable<Department>>
         {
-            return new ReturnCMDViewModel<IEnumerable<Department>>
-            {
-                code = (int)codes.Success,
-                data = db.Department
-            };
-        }
+            code = (int)codes.Success,
+            data = db.Department
+        };
     }
 }

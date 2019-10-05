@@ -24,7 +24,7 @@ namespace vue.Controllers
         /// </summary>
         /// <param name="pagination">分页参数</param>
         /// <returns></returns>
-        [Authorize(Policy = "CEO")]
+        [Authorize(Policy = "Department_Get")]
         [HttpPost]
         public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList([FromBody]PaginationRequestViewModel pagination)
         {
@@ -49,7 +49,7 @@ namespace vue.Controllers
         /// </summary>
         /// <param name="adepartment"></param>
         /// <returns></returns>
-        [Authorize(Policy = "CEO")]
+        [Authorize(Policy = "Department_Add")]
         [HttpPost]
         public ReturnCMDViewModel<Department> AddDepartment([FromBody]Department adepartment)
         {
@@ -61,7 +61,7 @@ namespace vue.Controllers
         /// </summary>
         /// <param name="adepartment"></param>
         /// <returns></returns>
-        [Authorize(Policy = "CEO")]
+        [Authorize(Policy = "Department_Del")]
         [HttpPost]
         public ReturnCMDViewModel<Department> DeleteDepartment([FromBody]Department adepartment)
         {
@@ -73,7 +73,7 @@ namespace vue.Controllers
         /// </summary>
         /// <param name="adepartment"></param>
         /// <returns></returns>
-        [Authorize(Policy = "CEO")]
+        [Authorize(Policy = "Department_Set")]
         [HttpPost]
         public ReturnCMDViewModel<Department> EditDepartment([FromBody]Department adepartment)
         {

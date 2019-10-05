@@ -25,6 +25,7 @@ namespace vue.DBModel
         public virtual DbSet<Assessment> Assessment { get; set; }
         public virtual DbSet<AttendanceSheet> AttendanceSheet { get; set; }
         public virtual DbSet<CategoryItems> CategoryItems { get; set; }
+        public virtual DbSet<Claims> Claims { get; set; }
         public virtual DbSet<Department> Department { get; set; }
         public virtual DbSet<Leave> Leave { get; set; }
         public virtual DbSet<Notice> Notice { get; set; }
@@ -236,6 +237,15 @@ namespace vue.DBModel
                     .HasColumnName("CI_Name")
                     .HasMaxLength(20)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<Claims>(entity =>
+            {
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.Label).IsUnicode(false);
             });
 
             modelBuilder.Entity<Department>(entity =>

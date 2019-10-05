@@ -42,6 +42,7 @@ namespace vue
             services.AddSingleton<IStuList, ImpStuList>();
             services.AddSingleton<IDepartment, ImpDepartment>();
             services.AddSingleton<IAspNetUsers, ImpAspNetUsers>();
+            services.AddSingleton<IClaim, ImpClaim>();
             #endregion
 
             #region 数据库、IdentityService
@@ -64,7 +65,7 @@ namespace vue
                 options.AddPolicy("Staff", policy => policy.RequireRole("Staff").Build());
                 options.AddPolicy("CeoOrHRManager", policy => policy.RequireRole("Ceo", "HRManager"));
                 //主页
-                options.AddPolicy("Home_Get", policy => policy.RequireClaim("Home_Get", "Get"));
+                options.AddPolicy("Home_Get", policy => policy.RequireClaim("Home", "Get"));
                 //员工资料管理
                 //-个人信息
                 options.AddPolicy("UserInfo_Get", policy => policy.RequireClaim("UserInfo", "Get"));
@@ -74,6 +75,11 @@ namespace vue
                 //-员工管理
                 options.AddPolicy("Staff_Get", policy => policy.RequireClaim("Staff", "Get"));
                 options.AddPolicy("Staff_Add", policy => policy.RequireClaim("Staff", "Add"));
+                //部门管理
+                options.AddPolicy("Department_Get", policy => policy.RequireClaim("Department", "Get"));
+                options.AddPolicy("Department_Set", policy => policy.RequireClaim("Department", "Set"));
+                options.AddPolicy("Department_Del", policy => policy.RequireClaim("Department", "Del"));
+                options.AddPolicy("Department_Add", policy => policy.RequireClaim("Department", "Add"));
             });
 
             #endregion
