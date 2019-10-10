@@ -50,7 +50,6 @@ namespace vue
             //services.AddDbContext<IdentityDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("vue")));
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("vue")));
             services.AddDefaultIdentity<NewUser>().AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
-            //.AddEntityFrameworkStores<ApplicationDbContext>();
             #endregion
 
             #region 授权
