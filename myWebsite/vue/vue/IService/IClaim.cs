@@ -11,7 +11,7 @@ namespace vue.IService
         /// 获取声明列表
         /// </summary>
         /// <returns></returns>
-        IEnumerable<Claims> GetClaimList();
+        IEnumerable<Claims> ClaimList { get; }
 
         /// <summary>
         /// 获取角色表

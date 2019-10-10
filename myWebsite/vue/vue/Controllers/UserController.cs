@@ -42,7 +42,6 @@ namespace vue.Controllers
             _aspNetUsers = aspNetUsers;
         }
 
-        /// <summary>
         #region 临时添加使用
         //for (int i = 0; i < 6; i++)
         //{
@@ -58,7 +57,16 @@ namespace vue.Controllers
         //    Email = "Q1.Q@com",
         //    Password = "xiaoming`"
         //});
+        //await Regiseter(new RegisterViewModel()
+        //{
+        //    UserName = "zhangwu",
+        //    Email = "Q2.Q@com",
+        //    Password = "Qq111`"
+        //});
+        //var Ceo = await _roleManager.FindByNameAsync("Ceo");
+        //await _roleManager.AddClaimAsync(Ceo, new Claim("Department", "Get"));
         #endregion
+        /// <summary>
         /// 用户登录方法
         /// </summary>
         /// <param name="loginViewModel"></param>
@@ -67,14 +75,7 @@ namespace vue.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody]LoginViewModel loginViewModel)
         {
-            //await Regiseter(new RegisterViewModel()
-            //{
-            //    UserName = "zhangwu",
-            //    Email = "Q2.Q@com",
-            //    Password = "Qq111`"
-            //});
-            //var Ceo = await _roleManager.FindByNameAsync("Ceo");
-            //await _roleManager.AddClaimAsync(Ceo, new Claim("Department", "Get"));
+
             if (!ModelState.IsValid)
             {
                 return Ok(new
@@ -106,10 +107,11 @@ namespace vue.Controllers
                 }
                 if (result.IsLockedOut)
                 {
+
                     return Ok(new
                     {
                         code = codes.IsLocked,
-                        message = "账户已被临时锁定,请稍后再试"
+                        message = $"账户已被临时锁定,请稍后再试{await _signInManager.UserManager.GetLockoutEndDateAsync(user)}"
                     });
                 }
             }
@@ -119,27 +121,6 @@ namespace vue.Controllers
                 message = "登录失败，请检查用户名或密码"
             });
         }
-
-        /// <summary>
-        /// 把权限集合转成字符串
-        /// </summary>
-        /// <param name="Role">权限集合</param>
-        /// <returns></returns>
-        private static string RoleToStr(IList<string> Role)
-        {
-            if (Role != null)
-            {
-                string Str = string.Empty;
-
-                foreach (string item in Role)
-                {
-                    Str += item + ",";
-                }
-                return Str;
-            }
-            return "Client";
-        }
-
 
         /// <summary>
         /// 注册的方法
@@ -173,7 +154,6 @@ namespace vue.Controllers
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpGet]
-        //[Route("RefreshToken")]
         public async Task<ObjectResult> RefreshToken(string oldToken = "")
         {
             if (string.IsNullOrEmpty(oldToken))
@@ -190,8 +170,8 @@ namespace vue.Controllers
                 var user = await _userManager.FindByIdAsync(tokenModel.ID);
                 if (user != null)
                 {
-                    string roleName = (await _userManager.GetRolesAsync(user))[0];
-                    IList<Claim> ClaimResult = await _roleManager.GetClaimsAsync(await _roleManager.FindByNameAsync(roleName));
+                    var roleName = (await _userManager.GetRolesAsync(user));
+                    IList<Claim> ClaimResult = await _roleManager.GetClaimsAsync(await _roleManager.FindByNameAsync(roleName.Count == 0 ? "Staff" : roleName[0]));
                     tokenModel.ID = user.Id;
                     tokenModel.Claims = ClaimResult;
                     var token = JwtHelper.IssueJwt(tokenModel);
@@ -211,7 +191,7 @@ namespace vue.Controllers
 
 
         /// <summary>
-        /// 获取用户基本信息
+        /// 登录后获取用户基本信息
         /// </summary>
         /// <param name="token">令牌</param>
         /// <returns></returns>
@@ -226,7 +206,11 @@ namespace vue.Controllers
                 {
                     List<string> roles = new List<string>();
                     var userinfo = await _userManager.FindByIdAsync(tokenModel.ID);
-                    IList<string> roleName = await _userManager.GetRolesAsync(userinfo);
+                    if (userinfo == null)
+                    {
+                        return Ok(new { code = 50008 });
+                    }
+                    var roleName = (await _userManager.GetRolesAsync(userinfo));
                     IList<Claim> ClaimResult = await _roleManager.GetClaimsAsync(await _roleManager.FindByNameAsync(roleName.Count == 0 ? "Staff" : roleName[0]));
                     if (ClaimResult.Count() > 0)
                     {
@@ -275,7 +259,7 @@ namespace vue.Controllers
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Policy = "UserInfo_Get")]
+        [Authorize(Policy = "MyInfo_Get")]
         public async Task<ReturnCMDViewModel<UserInfoViewModel>> GetUserinfo(string token)
         {
 
@@ -340,12 +324,12 @@ namespace vue.Controllers
         }
 
         /// <summary>
-        /// 上传照片
+        /// 用户自己修改照片
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "MyInfo_Set")]
         public async Task<ReturnCMDViewModel<IActionResult>> SetPhoto([FromForm]IFormFile file)
         {
             string token = Request.Headers["Authorization"];
@@ -369,12 +353,12 @@ namespace vue.Controllers
 
 
         /// <summary>
-        /// 添加员工照片
+        /// 添加员工时添加照片
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "MyInfo_Set")]
         public async Task<ReturnCMDViewModel<IActionResult>> SetStaffphoto([FromForm]string UserName, IFormFile file)
         {
             if (!string.IsNullOrEmpty(UserName) && file.ContentType == "image/jpeg")
@@ -401,7 +385,7 @@ namespace vue.Controllers
         /// <param name="userInfo"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Policy = "UserInfo_Set")]
+        [Authorize(Policy = "MyInfo_Set")]
         public ReturnCMDViewModel<IActionResult> SetUserInfo([FromBody]UserInfoViewModel NewUserInfo)
         {
             string token = Request.Headers["Authorization"];
@@ -427,7 +411,7 @@ namespace vue.Controllers
         /// <param name="passwords">新旧密码</param>
         /// <returns></returns>
         [HttpPost]
-        [AllowAnonymous]
+        [Authorize(Policy = "MyInfo_SetPwd")]
         public async Task<ReturnCMDViewModel<IActionResult>> ChangePassword([FromBody]ChangePasswordViewModel passwords)
         {
             if (!ModelState.IsValid)
@@ -486,7 +470,7 @@ namespace vue.Controllers
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Policy = "Colleague_Get")]
+        [Authorize(Policy = "Colleague_Find")]
         public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> FindColleagueByName([FromBody]PaginationRequestViewModel<string> pagination)
         {
             return new ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()

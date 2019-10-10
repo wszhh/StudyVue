@@ -4,10 +4,11 @@ namespace vue.ViewModel
 {
     public class TreeViewModel
     {
-        public int id { get; set; }
-        public string label { get; set; }
-        public string type { get; set; }
-        public string value { get; set; }
-        public IEnumerable<TreeViewModel> children { get; set; }
+        public int Id { get; set; }
+        public string Label { get; set; }
+        public string Type { get; set; }
+        public string Value { get; set; }
+        public string RoleId { get; set; }
+        public IEnumerable<TreeViewModel> Children { get; set; }
     }
 }

@@ -10,7 +10,7 @@ using codes = ViewModel.StateCodes.StateCode;
 namespace vue.Controllers
 {
     /// <summary>
-    /// 主页控制器
+    /// 主页
     /// </summary>
     //[EnableCors("AllowSameDomain")]
     [Route("api/[controller]/[action]")]

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -68,18 +67,29 @@ namespace vue
                 options.AddPolicy("Home_Get", policy => policy.RequireClaim("Home", "Get"));
                 //员工资料管理
                 //-个人信息
-                options.AddPolicy("UserInfo_Get", policy => policy.RequireClaim("UserInfo", "Get"));
-                options.AddPolicy("UserInfo_Set", policy => policy.RequireClaim("UserInfo", "Set"));
+                options.AddPolicy("MyInfo_Get", policy => policy.RequireClaim("MyInfo", "Get"));
+                options.AddPolicy("MyInfo_Set", policy => policy.RequireClaim("MyInfo", "Set"));
+                options.AddPolicy("MyInfo_SetPwd", policy => policy.RequireClaim("MyInfo", "SetPwd"));
                 //-查找同事
                 options.AddPolicy("Colleague_Get", policy => policy.RequireClaim("Colleague", "Get"));
+                options.AddPolicy("Colleague_Find", policy => policy.RequireClaim("Colleague", "Find"));
                 //-员工管理
                 options.AddPolicy("Staff_Get", policy => policy.RequireClaim("Staff", "Get"));
                 options.AddPolicy("Staff_Add", policy => policy.RequireClaim("Staff", "Add"));
+                options.AddPolicy("Staff_Del", policy => policy.RequireClaim("Staff", "Del"));
+                options.AddPolicy("Staff_Set", policy => policy.RequireClaim("Staff", "Set"));
+                options.AddPolicy("Staff_Find", policy => policy.RequireClaim("Staff", "Find"));
                 //部门管理
                 options.AddPolicy("Department_Get", policy => policy.RequireClaim("Department", "Get"));
                 options.AddPolicy("Department_Set", policy => policy.RequireClaim("Department", "Set"));
                 options.AddPolicy("Department_Del", policy => policy.RequireClaim("Department", "Del"));
                 options.AddPolicy("Department_Add", policy => policy.RequireClaim("Department", "Add"));
+                //权限管理
+                options.AddPolicy("Claim_Get", policy => policy.RequireClaim("Claim", "Get"));
+                options.AddPolicy("Claim_Add", policy => policy.RequireClaim("Claim", "Add"));
+                options.AddPolicy("Claim_Del", policy => policy.RequireClaim("Claim", "Del"));
+                options.AddPolicy("Claim_Set", policy => policy.RequireClaim("Claim", "Set"));
+                options.AddPolicy("Claim_SetRole", policy => policy.RequireClaim("Claim", "SetRole"));//分配角色
             });
 
             #endregion

@@ -8,7 +8,7 @@ using vue.ViewModel;
 
 namespace vue.Controllers
 {
- 
+
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class DepartmentController : Controller
@@ -31,8 +31,9 @@ namespace vue.Controllers
             return _department.GetDepartmentList(pagination);
         }
 
+
         /// <summary>
-        /// 不分页获取部门列表
+        /// 不分页获取部门列表用于表格展示
         /// </summary>
         /// <param name="pagination"></param>
         /// <returns></returns>

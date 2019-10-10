@@ -65,28 +65,13 @@
             /// </summary>
             UserNameError = 10014,
 
-        }
+            /// <summary>
+            /// 修改角色声明失败
+            /// </summary>
+            ChangeClaimError = 10015,
 
-        //public int SuccessI { get; } = 20000;
+        }
     }
 }
 
-
-//public static int GetStateCode(string enumName)
-//{
-//    try
-//    {
-//        var values = Enum.GetValues(typeof(StateCode));
-//        var ht = new Hashtable();
-//        foreach (var val in values)
-//        {
-//            ht.Add(Enum.GetName(typeof(StateCode), val), val);
-//        }
-//        return (int)ht[enumName];
-//    }
-//    catch (Exception e)
-//    {
-//        throw e;
-//    }
-//}
 

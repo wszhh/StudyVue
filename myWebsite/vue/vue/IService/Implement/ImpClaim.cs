@@ -10,8 +10,17 @@ namespace vue.IService.Implement
     {
         private HRCContext db = new HRCContext();
 
-        public IEnumerable<Claims> GetClaimList() => db.Claims;
+        /// <summary>
+        /// 获取声明列表
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Claims> ClaimList => db.Claims;
 
-        public IEnumerable<RolesViewModel> Roles => db.AspNetRoles.Select(x => new RolesViewModel() { name = x.Name });
+
+        /// <summary>
+        /// 获取角色表
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<RolesViewModel> Roles => db.AspNetRoles.Select(x => new RolesViewModel() { id = x.Id, name = x.Name });
     }
 }
