@@ -163,11 +163,11 @@ namespace vue.Controllers
         [HttpPost]
         public async Task<IActionResult> GetUsersInRole([FromBody] IdentityRole role)
         {
-            //await _userManager.GetUsersInRoleAsync(role.Name);
+            IList<NewUser> user = await _userManager.GetUsersInRoleAsync(role.Name);
             return Ok(new
             {
                 code = codes.Success,
-                data = await _userManager.GetUsersInRoleAsync(role.Name)
+                data = user.Select(x => new { name = x.UserName, x.Id })
             });
         }
     }
