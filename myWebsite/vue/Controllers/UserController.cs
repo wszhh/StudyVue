@@ -65,6 +65,16 @@ namespace vue.Controllers
         //});
         //var Ceo = await _roleManager.FindByNameAsync("Ceo");
         //await _roleManager.AddClaimAsync(Ceo, new Claim("Department", "Get"));
+        //for (int i = 1; i <= 20; i++)
+        //{
+        //    await Regiseter(new RegisterViewModel()
+        //    {
+        //        UserName = "zhang" + i,
+        //        Email = $"q{i}@qq.com",
+        //        Password = "Qq111."
+        //    });
+
+        //}
         #endregion
         /// <summary>
         /// 用户登录方法
@@ -75,7 +85,6 @@ namespace vue.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody]LoginViewModel loginViewModel)
         {
-
             if (!ModelState.IsValid)
             {
                 return Ok(new
@@ -139,8 +148,9 @@ namespace vue.Controllers
                 var RegisterUserResult = await _userManager.CreateAsync(user, registerViewModel.Password);
                 if (RegisterUserResult.Succeeded)
                 {
-                    var SetEmailResult = await _userManager.SetEmailAsync(user, registerViewModel.Email);
+                    await _userManager.SetEmailAsync(user, registerViewModel.Email);
                     _aspNetUsers.setUserPhoto(user.Id, DefaultUserPhoto);//默认照片
+                    await _userManager.AddToRoleAsync(user, "Staff");//默认添加Staff权限
                     return Ok("1");
                 }
             }

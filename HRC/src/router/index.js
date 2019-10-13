@@ -105,12 +105,12 @@ export const asyncRoutes = [
   },
 
   {
-    path: '/form',
+    path: '/Claim',
     component: Layout,
     children: [{
       path: 'index',
-      name: 'Form',
-      component: () => import('@/views/form/index'),
+      name: 'claim',
+      component: () => import('@/views/claim/index'),
       meta: { roles: ["Claim_Get"], title: '权限管理', icon: 'form', noCache: true }
     }]
   },

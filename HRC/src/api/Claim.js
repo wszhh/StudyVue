@@ -31,3 +31,11 @@ export function SetRoleClaim(data) {
         data
     })
 } 
+
+export function SetRoleUsers(data) {
+    return request({
+        url: '/Claim/SetRoleUsers',
+        method: 'post',
+        data
+    })
+} 

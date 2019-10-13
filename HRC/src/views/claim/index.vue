@@ -1,12 +1,21 @@
 <template>
   <div class="zdy-border">
-    <!-- 按钮区 -->
-    <el-dialog title="收货地址" :visible.sync="RoledialogTableVisible">
-      <el-table :data="gridData">
-        <el-table-column property="date" label="日期" width="150"></el-table-column>
-        <el-table-column property="name" label="姓名" width="200"></el-table-column>
-        <el-table-column property="address" label="地址"></el-table-column>
-      </el-table>
+    <!-- 分配角色的dialog -->
+    <el-dialog :title="RoleName" :visible.sync="RoledialogTableVisible" width="75vh">
+      <el-transfer
+        filterable
+        filter-placeholder="请输入用户名"
+        v-model="Transfer.value"
+        :data="Transfer.data"
+        :titles="['未分配/Staff权限','已分配本权限']"
+        @change="TransferChange"
+      >
+        <!-- <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button> -->
+      </el-transfer>
+      <!-- <el-table :data="gridData">
+        <el-table-column property="id" label="ID"></el-table-column>
+        <el-table-column property="name" label="姓名"></el-table-column>
+      </el-table>-->
     </el-dialog>
     <!-- 编辑Claim的dialog -->
     <el-dialog :visible.sync="ClaimdialogVisible" width="30%" top="2vh" :title="RoleName">
@@ -49,14 +58,20 @@ import {
   GetClaimTree,
   GetRoles,
   SetRoleClaim,
-  GetUsersInRole
+  GetUsersInRole,
+  SetRoleUsers
 } from "@/api/Claim";
 
 import checkPermission from "@/utils/permission"; // 权限判断函数
 
 export default {
+  name: "claim",
   data() {
     return {
+      Transfer: {
+        data: [],
+        value: []
+      },
       Tree: [],
       tableData: [],
       ClaimdialogVisible: false,
@@ -70,6 +85,12 @@ export default {
     this.getTableData();
   },
   methods: {
+    TransferChange(value, direction, movedKeys) {
+      //console.log(value);
+      console.log(direction);
+      console.log(movedKeys);
+      SetRoleUsers({ direction: direction, movedKeys: movedKeys });
+    },
     checkPermission,
     async GetClaimTree(row) {
       const { data } = await GetClaimTree(row);
@@ -85,7 +106,10 @@ export default {
       this.tableData = data;
     },
     async GetUsersInRole(row) {
-      const { data } = await GetUsersInRole(row);
+      this.RoleName = `分配\"${row.name}\"的角色`;
+      this.Transfer = await GetUsersInRole(row);
+      // this.Transfer = data;
+      // this.value = data.value;
     }
   }
 };

@@ -163,12 +163,22 @@ namespace vue.Controllers
         [HttpPost]
         public async Task<IActionResult> GetUsersInRole([FromBody] IdentityRole role)
         {
-            IList<NewUser> user = await _userManager.GetUsersInRoleAsync(role.Name);
+            IList<NewUser> thisRoleUser = await _userManager.GetUsersInRoleAsync(role.Name);//当前需要分配用户的角色所查的用户表
+            IList<NewUser> staffRoleUser = await _userManager.GetUsersInRoleAsync("Staff");//Staff用户表/未分配权限表 
+            //IEnumerable<NewUser> AllUser = _userManager.Users;//所有用户表
             return Ok(new
             {
                 code = codes.Success,
-                data = user.Select(x => new { name = x.UserName, x.Id })
+                data = staffRoleUser.Union(thisRoleUser).Select(x => new { label = x.UserName, key = x.Id }),
+                value = thisRoleUser.Select(x => x.Id)
             });
+        }
+
+
+        [HttpPost]
+        public IActionResult SetRoleUsers(string direction, List<string> movedKeys)
+        {
+            return Content(direction + movedKeys);
         }
     }
 }
