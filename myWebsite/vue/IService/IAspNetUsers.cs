@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ViewModel;
 using vue.Areas.Identity.Data;
 using vue.ViewModel;
@@ -16,15 +13,23 @@ namespace vue.IService
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        ReturnCMDViewModel<IActionResult> setUserPhoto(string userId, string newPhotoPath);
+        ReturnViewModel<IActionResult> setUserPhoto(string userId, string newPhotoPath);
 
         /// <summary>
-        /// 更改用户部分信息
+        /// 更改员工部分信息
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="newPhotoPath"></param>
         /// <returns></returns>
-        ReturnCMDViewModel<IActionResult> setUserInfo(string userId, UserInfoViewModel NewUserInfo);
+        ReturnViewModel<IActionResult> setUserInfo(string userId, UserInfoViewModel NewUserInfo);
+
+        /// <summary>
+        /// 更改员工全部信息
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="NewUserInfo"></param>
+        /// <returns></returns>
+        ReturnViewModel<IActionResult> setUserInfos(string userId, UserInfoViewModel NewUserInfo);
 
         /// <summary>
         /// 获取同事列表
@@ -53,6 +58,6 @@ namespace vue.IService
         /// <param name="userId"></param>
         /// <param name="NewUserInfo"></param>
         /// <returns></returns>
-        ReturnCMDViewModel<IActionResult> setStaffInfo(string UserName, NewUser NewUserInfo);
+        ReturnViewModel<IActionResult> setStaffInfo(string UserName, NewUser NewUserInfo);
     }
 }

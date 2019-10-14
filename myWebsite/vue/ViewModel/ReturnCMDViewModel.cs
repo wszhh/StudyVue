@@ -1,7 +1,7 @@
 ﻿namespace vue.ViewModel
 {
 
-    public class ReturnCMDViewModel<T>
+    public class ReturnViewModel<T>
     {
         /// <summary>
         /// 操作是否成功

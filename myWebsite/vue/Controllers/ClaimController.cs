@@ -36,10 +36,10 @@ namespace vue.Controllers
         [Authorize(Policy = "Claim_Get")]
         public async Task<IActionResult> GetClaimTree([FromBody] IdentityRole role)
         {
-            if (!ModelState.IsValid)
-            {
-                return NotFound();
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return NotFound();
+            //}
 
             //所有子结点
             var ChildrenClaims = _claim.ClaimList.Select(a => new TreeViewModel()
@@ -85,7 +85,6 @@ namespace vue.Controllers
                     {
                         Result.Add(All.Id);
                     }
-
                 }
             }
             return Ok(new
@@ -96,18 +95,18 @@ namespace vue.Controllers
                     ClaimTree,//所有的声明表
                     Result//角色所拥有的声明
                 }
-
-            }); ;
+            });
         }
 
 
         /// <summary>
         /// 获取角色列表
+        /// 不分页
         /// </summary>
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "Claim_Get")]
-        public ReturnCMDViewModel<IEnumerable<RolesViewModel>> GetRoles() => new ReturnCMDViewModel<IEnumerable<RolesViewModel>>()
+        public ReturnViewModel<IEnumerable<RolesViewModel>> GetRoles() => new ReturnViewModel<IEnumerable<RolesViewModel>>()
         {
             code = (int)codes.Success,
             data = _claim.Roles
@@ -121,12 +120,12 @@ namespace vue.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "Claim_Set")]
-        public async Task<ReturnCMDViewModel<List<ClaimsViewModel>>> SetRoleClaim([FromBody] List<ClaimsViewModel> claims)
+        public async Task<ReturnViewModel<List<ClaimsViewModel>>> SetRoleClaim([FromBody] List<ClaimsViewModel> claims)
         {
             //bool flag1 = false, flag2 = false, flag3 = false;
             if (!claims.Any())
             {
-                return new ReturnCMDViewModel<List<ClaimsViewModel>>()
+                return new ReturnViewModel<List<ClaimsViewModel>>()
                 {
                     code = (int)codes.ChangeClaimError,
                     message = "编辑失败"
@@ -147,7 +146,7 @@ namespace vue.Controllers
                 var result = await _roleManager.AddClaimAsync(role, item);
 
             }
-            return new ReturnCMDViewModel<List<ClaimsViewModel>>()
+            return new ReturnViewModel<List<ClaimsViewModel>>()
             {
                 code = (int)codes.Success,
                 message = $"\"{role.Name}\"编辑成功"
@@ -156,16 +155,17 @@ namespace vue.Controllers
         }
 
         /// <summary>
-        /// 获取角色的用户列表
+        /// 获取拥有此角色的用户列表-Transfer
         /// </summary>
-        /// <param name="RoleName"></param>
+        /// <param name="role"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> GetUsersInRole([FromBody] IdentityRole role)
+        [Authorize(Policy = "Claim_Get")]
+
+        public async Task<IActionResult> GetUsersInRole([FromBody] NAndOIentityRoleViewModel role)
         {
-            IList<NewUser> thisRoleUser = await _userManager.GetUsersInRoleAsync(role.Name);//当前需要分配用户的角色所查的用户表
-            IList<NewUser> staffRoleUser = await _userManager.GetUsersInRoleAsync("Staff");//Staff用户表/未分配权限表 
-            //IEnumerable<NewUser> AllUser = _userManager.Users;//所有用户表
+            IList<NewUser> thisRoleUser = await _userManager.GetUsersInRoleAsync(role.RightIdentityRole.Name);//当前需要分配用户的角色所查的用户表
+            IList<NewUser> staffRoleUser = await _userManager.GetUsersInRoleAsync(role.LeftIdentityRole == null ? "Staff" : role.LeftIdentityRole.Name);
             return Ok(new
             {
                 code = codes.Success,
@@ -175,10 +175,64 @@ namespace vue.Controllers
         }
 
 
+        /// <summary>
+        /// 分配角色
+        /// </summary>
+        /// <param name="transfer"></param>
+        /// <returns></returns>
         [HttpPost]
-        public IActionResult SetRoleUsers(string direction, List<string> movedKeys)
+        [Authorize(Policy = "Claim_SetRole")]
+        public async Task<ReturnViewModel<IActionResult>> SetRoleUsers([FromBody]TransferViewModel transfer)
         {
-            return Content(direction + movedKeys);
+            try
+            {
+                if ("right".Equals(transfer.Direction))
+                {
+                    foreach (var item in transfer.MovedKeys)
+                    {
+                        //先根据id把用户都查出来
+                        NewUser aUser = await _userManager.FindByIdAsync(item);
+                        if (aUser != null)
+                        {
+                            //不管原来是什么角色都先移除
+                            var removeResult = await _userManager.RemoveFromRoleAsync(aUser, transfer.Roles.LeftIdentityRole.NormalizedName == null ? "Staff" : transfer.Roles.LeftIdentityRole.Name);
+                            if (removeResult.Succeeded)
+                            {
+                                //左边是空的话那就是Staff
+                                var addResult = await _userManager.AddToRoleAsync(aUser, transfer.Roles.RightIdentityRole.Name);
+                            }
+                        }
+                    }
+                }
+                else if ("left".Equals(transfer.Direction))
+                {
+                    foreach (var item in transfer.MovedKeys)
+                    {
+                        NewUser aUser = await _userManager.FindByIdAsync(item);
+                        if (aUser != null)
+                        {
+                            var removeResult = await _userManager.RemoveFromRoleAsync(aUser, transfer.Roles.RightIdentityRole.Name);
+                            if (removeResult.Succeeded)
+                            {
+                                var addResult = await _userManager.AddToRoleAsync(aUser, transfer.Roles.LeftIdentityRole.NormalizedName == null ? "Staff" : transfer.Roles.LeftIdentityRole.Name);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                return new ReturnViewModel<IActionResult>()
+                {
+                    code = (int)codes.SetRoleUsersError,
+                    message = $"修改失败({e.Message})"
+                };
+            }
+            return new ReturnViewModel<IActionResult>()
+            {
+                code = (int)codes.Success,
+                message = "修改成功"
+            };
         }
     }
 }

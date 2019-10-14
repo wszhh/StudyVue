@@ -28,9 +28,9 @@ namespace vue.Controllers
 
         [Authorize(Policy = "Home_Get")]
         [HttpGet]
-        public ReturnCMDViewModel<string> GetTime()
+        public ReturnViewModel<string> GetTime()
         {
-            return new ReturnCMDViewModel<string>()
+            return new ReturnViewModel<string>()
             {
                 code = (int)codes.Success,
                 data = DateTime.Now.ToString(),

@@ -7,15 +7,18 @@
         filter-placeholder="请输入用户名"
         v-model="Transfer.value"
         :data="Transfer.data"
-        :titles="['未分配/Staff权限','已分配本权限']"
+        :titles="TransferTittle"
         @change="TransferChange"
       >
-        <!-- <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button> -->
+        <el-select
+          v-model="Value"
+          slot="left-footer"
+          placeholder="请选择角色"
+          @change="SelectChange(tableData)"
+        >
+          <el-option v-for="item in tableData" :key="item.id" :label="item.name" :value="item.id"></el-option>
+        </el-select>
       </el-transfer>
-      <!-- <el-table :data="gridData">
-        <el-table-column property="id" label="ID"></el-table-column>
-        <el-table-column property="name" label="姓名"></el-table-column>
-      </el-table>-->
     </el-dialog>
     <!-- 编辑Claim的dialog -->
     <el-dialog :visible.sync="ClaimdialogVisible" width="30%" top="2vh" :title="RoleName">
@@ -37,7 +40,7 @@
           <el-button
             v-permission="['Claim_SetRole']"
             type="primary"
-            @click="GetUsersInRole(row),RoledialogTableVisible=true"
+            @click="GetUsersInRolee(row),RoledialogTableVisible=true"
             size="small"
           >分配角色</el-button>
           <el-button
@@ -45,8 +48,14 @@
             @click="GetClaimTree(row),ClaimdialogVisible = true"
             type="primary"
             size="small"
-          >编辑权限</el-button>
-          <el-button v-permission="['Claim_Del']" type="danger" size="small">删 除</el-button>
+          >编辑声明</el-button>
+          <el-button
+            v-permission="['Claim_Del']"
+            type="danger"
+            size="small"
+            :disabled="IsDisabled(row)"
+            @click="deletedBtn(row)"
+          >删 除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -72,24 +81,42 @@ export default {
         data: [],
         value: []
       },
+      TransferTittle: [],
       Tree: [],
       tableData: [],
       ClaimdialogVisible: false,
       RoledialogTableVisible: false,
+      deletedialogVisible: false,
       Claims: [],
       RoleName: "Null",
-      gridData: null
+      gridData: null,
+      NewTransferRole: null,
+      dialogMsg: "Null",
+      RightIdentityRole: {
+        id: "",
+        name: ""
+      },
+      LeftIdentityRole: {
+        id: "",
+        name: ""
+      },
+      Value: ""
     };
   },
   created() {
     this.getTableData();
   },
   methods: {
+    //分配角色
     TransferChange(value, direction, movedKeys) {
-      //console.log(value);
-      console.log(direction);
-      console.log(movedKeys);
-      SetRoleUsers({ direction: direction, movedKeys: movedKeys });
+      SetRoleUsers({
+        direction: direction,
+        movedKeys: movedKeys,
+        Roles: {
+          RightIdentityRole: this.RightIdentityRole,
+          LeftIdentityRole: this.LeftIdentityRole
+        }
+      });
     },
     checkPermission,
     async GetClaimTree(row) {
@@ -105,11 +132,38 @@ export default {
       const { data } = await GetRoles();
       this.tableData = data;
     },
-    async GetUsersInRole(row) {
-      this.RoleName = `分配\"${row.name}\"的角色`;
-      this.Transfer = await GetUsersInRole(row);
-      // this.Transfer = data;
-      // this.value = data.value;
+    async GetUsersInRolee(row, LeftRow) {
+      this.RoleName = `分配角色`;
+      this.TransferTittle = [
+        `${LeftRow == null ? "Staff" : LeftRow.name}`,
+        `${row.name}`
+      ];
+      this.Transfer = await GetUsersInRole({
+        RightIdentityRole: row,
+        LeftIdentityRole: LeftRow
+      });
+      this.RightIdentityRole = row;
+    },
+    IsDisabled(row) {
+      return row.name.toString() == "Staff" ? true : false;
+    },
+    SelectChange(tableData) {
+      this.tableData.forEach(item => {
+        if (item.id == this.Value) {
+          this.LeftIdentityRole = item;
+        }
+      });
+      this.GetUsersInRolee(this.RightIdentityRole, this.LeftIdentityRole);
+    },
+    deletedBtn(row) {
+      this.$confirm(`确认删除\"${row.name}\"？`)
+        .then(_ => {
+          this.$message({
+            message: `删除\"${row.name}\"成功`,
+            type: "success"
+          });
+        })
+        .catch(_ => {});
     }
   }
 };

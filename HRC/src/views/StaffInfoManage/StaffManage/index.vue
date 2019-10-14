@@ -2,7 +2,8 @@
   <div id="fengye" class="zdy-border">
     <!-- 顶端搜索 -->
     <div style="width:450px;">
-      <el-dialog title="添加员工" :visible.sync="dialogFormVisible" width="70%" top="5vh">
+      <!-- 添加员工的dialog -->
+      <el-dialog title="添加员工" :visible.sync="AdddialogFormVisible" width="70%" top="5vh">
         <!-- 表单开始 -->
         <el-form ref="UserInfo" :model="UserInfo" label-width="120px">
           <el-row>
@@ -114,7 +115,7 @@
                 :rules="[{required:true,message:'不能留空'},{type:'number',message:'只能输入数字'}]"
               >
                 <el-input
-                  v-model.number="UserInfo.phoneNumber"
+                  v-model="UserInfo.phoneNumber"
                   show-word-limit
                   maxlength="11"
                   placeholder="请输入电话"
@@ -156,21 +157,173 @@
             </el-col>
           </el-row>
           <el-form-item>
-            <!-- <el-button type="primary" @click="onSubmit">保存</el-button> -->
+            <!-- <el-button type="primary" @click="onAddSubmit">保存</el-button> -->
           </el-form-item>
         </el-form>
         <!-- 表单结束 -->
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-tag v-permission="['Admin']">admin</el-tag>
-          <!-- <el-button type="primary" @click="submitUpload">上 传 确 定</el-button> -->
-          <el-button type="primary" @click="onSubmit">确 定</el-button>
-          <!-- <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button> -->
+          <el-button @click="AdddialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="onAddSubmit">确 定</el-button>
         </div>
       </el-dialog>
+      <!-- 编辑员工的dialog -->
+      <el-dialog title="编辑员工" :visible.sync="ChangedialogFormVisible" width="70%" top="5vh">
+        <!-- 表单开始 -->
+        <el-form ref="ChangeUserInfo" :model="UserInfo" label-width="120px">
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="照片">
+                <el-upload
+                  ref="upload"
+                  :action="ActionUrl"
+                  :before-upload="isHaveImg"
+                  :on-change="checkImg"
+                  :on-success="onSuccess"
+                  :file-list="fileList"
+                  :auto-upload="false"
+                  list-type="picture"
+                  accept="image/jpeg"
+                  :multiple="false"
+                  :limit="1"
+                  :headers="{Authorization:Authorization}"
+                  :data="{UserName:UserInfo.userName}"
+                >
+                  <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                  <div slot="tip" style="color:#F56C6C;font-size:10px;">{{error.UploadError}}</div>
+                </el-upload>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <!-- 部门 -->
+              <el-form-item
+                label="部门"
+                :rules="[{required:true,message:'不得留空'}]"
+                prop="departmentId"
+              >
+                <el-select v-model="UserInfo.departmentId">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.departmentId"
+                    :label="item.departmentName"
+                    :value="item.departmentId"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <!-- 入职日期 -->
+              <el-form-item label="入职日期" :rules="[{required:true,message:'不得留空'}]" prop="joinTime">
+                <el-date-picker
+                  v-model="UserInfo.joinTime"
+                  type="date"
+                  placeholder="暂无数据"
+                  style="width: 80%;"
+                  format="yyyy 年 MM 月 dd 日"
+                  :default-value="new Date()"
+                />
+              </el-form-item>
+              <el-form-item label="薪资" prop="salary" :rules="[{required:true,message:'不得留空'}]">
+                <el-input v-model="UserInfo.salary" placeholder="请输入薪资" style="width: 80%">
+                  <template slot="prepend">￥</template>
+                </el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
 
-      <el-button type="primary" @click="dialogFormVisible = true">添加员工</el-button>
-      <el-input placeholder="请输入员工姓名" v-model="FindByname" class="input-with-select" clearable>
+          <el-row>
+            <el-col :span="12">
+              <!-- 姓名 -->
+              <el-form-item label="姓名" prop="realName" :rules="[{required:true,message:'不能留空'}]">
+                <el-input v-model="UserInfo.realName" placeholder="请输入内容" style="width: 80%"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <!-- 出生日期 -->
+              <el-form-item label="出生日期" :rules="[{required:true,message:'不得留空'}]" prop="birthday">
+                <el-date-picker
+                  v-model="UserInfo.birthday"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  placeholder="请选择出生日期"
+                  style="width: 80%;"
+                  format="yyyy 年 MM 月 dd 日"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <!-- 性别 -->
+              <el-form-item label="性别" :rules="[{required:true,message:'不能留空'}]" prop="sex">
+                <el-select v-model="UserInfo.sex">
+                  <el-option label="男" value="1"></el-option>
+                  <el-option label="女" value="0"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <!-- 电话 -->
+              <el-form-item
+                label="电话"
+                prop="phoneNumber"
+                :rules="[{required:true,message:'不能留空'},{type:'number',message:'只能输入数字'}]"
+              >
+                <el-input
+                  v-model.number="UserInfo.phoneNumber"
+                  show-word-limit
+                  maxlength="11"
+                  placeholder="请输入电话"
+                  style="width: 80%"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row>
+            <el-col :span="12">
+              <!-- 地址 -->
+              <el-form-item label="地址" :rules="[{required:true,message:'不能留空'}]" prop="address">
+                <el-input v-model="UserInfo.address" placeholder="请输入内容" style="width: 80%"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <!-- 个人介绍 -->
+              <el-form-item
+                label="个人介绍"
+                :rules="[{required:true,message:'不能留空'}]"
+                prop="introduction"
+              >
+                <el-input
+                  v-model="UserInfo.introduction"
+                  type="textarea"
+                  placeholder="这人个很懒，什么都没写!"
+                  style="width: 80%"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-form-item>
+            <!-- <el-button type="primary" @click="onAddSubmit">保存</el-button> -->
+          </el-form-item>
+        </el-form>
+        <!-- 表单结束 -->
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="ChangedialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="OnChangeSubmit()">确 定</el-button>
+        </div>
+      </el-dialog>
+      <!-- 其它选项 -->
+      <el-button
+        type="primary"
+        v-permission="['Staff_Add']"
+        @click="AdddialogFormVisible = true"
+      >添加员工</el-button>
+
+      <el-input
+        v-permission="['Staff_Find']"
+        placeholder="请输入员工姓名"
+        class="input-with-select"
+        clearable
+      >
         <!-- <el-select v-model="select" slot="prepend" placeholder="请选择">
           <el-option label="餐厅名" value="1"></el-option>
           <el-option label="订单号" value="2"></el-option>
@@ -246,9 +399,20 @@
         />
       </el-table-column>
 
-      <el-table-column align="center" label="操作" width="80">
+      <el-table-column
+        align="center"
+        label="操作"
+        width="80"
+        v-permission="['Staff_Set']"
+        fixed="right"
+      >
         <template slot-scope="scope">
-          <el-button @click="handleClick(scope.row)" type="primary" size="small">编辑</el-button>
+          <el-button
+            @click="ChangeUserInfo(scope.row),ChangedialogFormVisible=true"
+            type="primary"
+            size="small"
+            v-permission="['Staff_Set']"
+          >编辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -268,12 +432,12 @@ import { GetAllDepartments } from "@/api/department";
 import {
   getStaffList,
   SetStaffInfo,
-  FindColleagueByName
+  FindColleagueByName,
+  GetUserinfo
 } from "@/api/StaffInfoManage";
 import { getToken } from "@/utils/auth";
-import { GetUserinfo, SetUserInfo } from "@/api/StaffInfoManage";
 import { CheckUserName, AddStaff } from "@/api/user";
-import permission from '@/directive/permission/index.js' // 权限判断指令
+import permission from "@/directive/permission/index.js"; // 权限判断指令
 const state = {
   token: getToken()
 };
@@ -326,7 +490,8 @@ export default {
       },
       FindByname: "",
       formLabelWidth: "120px",
-      dialogFormVisible: false
+      AdddialogFormVisible: false,
+      ChangedialogFormVisible: false
     };
   },
   created() {
@@ -334,8 +499,19 @@ export default {
     this.getList();
   },
   methods: {
+    //编辑员工
+    ChangeUserInfo(row) {
+      //console.log(row);
+      this.UserInfo = row;
+      this.UserInfo.sex = row.sex.toString();
+      this.UserInfo.phoneNumber == null ? "" : row.phoneNumber * 1;
+      if (row.departmentId == 0) {
+        this.UserInfo.departmentId = "请选择";
+      }
+    },
+    //上传图片成功
     onSuccess(response) {
-      console.log(response);
+      //console.log(response);
       this.$refs.upload.clearFiles();
     },
     isHaveImg(file) {},
@@ -375,7 +551,14 @@ export default {
       }
       return isJPG && isLt2M;
     },
-    onSubmit() {
+    OnChangeSubmit() {
+      this.$refs.ChangeUserInfo.validate(validate => {
+        if (validate) {
+          SetStaffInfo(this.UserInfo);
+        }
+      });
+    },
+    onAddSubmit() {
       //再次检查用户名
       var value = this.UserInfo.userName;
       if (value.length <= 15 && value.length >= 5) {
@@ -400,7 +583,7 @@ export default {
           this.flag = true;
         }
       });
-      console.log("flag:" + this.flag);
+      //console.log("flag:" + this.flag);
       if (this.flag) {
         AddStaff(this.UserInfo).then(res => {
           if (res.code == 20000) {

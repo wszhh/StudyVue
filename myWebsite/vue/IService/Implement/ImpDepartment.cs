@@ -17,11 +17,11 @@ namespace vue.IService.Implement
         /// </summary>
         /// <param name="adepartment"></param>
         /// <returns></returns>
-        public ReturnCMDViewModel<Department> AddDepartment(Department adepartment)
+        public ReturnViewModel<Department> AddDepartment(Department adepartment)
         {
             if (db.Department.Where(x => x.DepartmentName == adepartment.DepartmentName).Any())
             {
-                return new ReturnCMDViewModel<Department>()
+                return new ReturnViewModel<Department>()
                 {
                     code = (int)codes.AddDepartmentError,
                     data = adepartment,
@@ -35,7 +35,7 @@ namespace vue.IService.Implement
             }
             catch (Exception)
             {
-                return new ReturnCMDViewModel<Department>()
+                return new ReturnViewModel<Department>()
                 {
                     code = (int)codes.AddDepartmentError,
                     data = adepartment,
@@ -43,7 +43,7 @@ namespace vue.IService.Implement
                     //message = i.Message
                 };
             }
-            return new ReturnCMDViewModel<Department>()
+            return new ReturnViewModel<Department>()
             {
                 code = (int)codes.Success,
                 data = adepartment,
@@ -57,8 +57,8 @@ namespace vue.IService.Implement
         /// </summary>
         /// <param name="pagination"></param>
         /// <returns></returns>
-        public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList(PaginationRequestViewModel pagination)
-         => new ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>>()
+        public ReturnViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList(PaginationRequestViewModel pagination)
+         => new ReturnViewModel<PaginationResponeViewModel<IEnumerable<Department>>>()
          {
              data = new PaginationResponeViewModel<IEnumerable<Department>>()
              {
@@ -73,7 +73,7 @@ namespace vue.IService.Implement
         /// </summary>
         /// <param name="adepartment"></param>
         /// <returns></returns>
-        public ReturnCMDViewModel<Department> DeleteDepartment(Department adepartment)
+        public ReturnViewModel<Department> DeleteDepartment(Department adepartment)
         {
             try
             {
@@ -84,14 +84,14 @@ namespace vue.IService.Implement
             }
             catch (Exception)
             {
-                return new ReturnCMDViewModel<Department>()
+                return new ReturnViewModel<Department>()
                 {
                     code = (int)codes.DeleteDepartmentError,
                     data = adepartment,
                     message = $"部门\"{adepartment.DepartmentName}\"删除失败"
                 };
             }
-            return new ReturnCMDViewModel<Department>()
+            return new ReturnViewModel<Department>()
             {
                 code = (int)codes.Success,
                 data = adepartment,
@@ -104,7 +104,7 @@ namespace vue.IService.Implement
         /// </summary>
         /// <param name="adepartment"></param>
         /// <returns></returns>
-        public ReturnCMDViewModel<Department> EditDepartment(Department adepartment)
+        public ReturnViewModel<Department> EditDepartment(Department adepartment)
         {
             try
             {
@@ -114,14 +114,14 @@ namespace vue.IService.Implement
             }
             catch (Exception)
             {
-                return new ReturnCMDViewModel<Department>()
+                return new ReturnViewModel<Department>()
                 {
                     code = (int)codes.EditDepartmentError,
                     data = adepartment,
                     message = $"部门\"{adepartment.DepartmentName}\"编辑失败"
                 };
             }
-            return new ReturnCMDViewModel<Department>()
+            return new ReturnViewModel<Department>()
             {
                 code = (int)codes.Success,
                 data = adepartment,
@@ -133,7 +133,7 @@ namespace vue.IService.Implement
         /// 不分页获取所有部门
         /// </summary>
         /// <returns></returns>
-        public ReturnCMDViewModel<IEnumerable<Department>> GetAllDepartments() => new ReturnCMDViewModel<IEnumerable<Department>>
+        public ReturnViewModel<IEnumerable<Department>> GetAllDepartments() => new ReturnViewModel<IEnumerable<Department>>
         {
             code = (int)codes.Success,
             data = db.Department

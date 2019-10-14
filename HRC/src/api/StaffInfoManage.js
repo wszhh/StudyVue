@@ -15,6 +15,7 @@ export function SetUserInfo(data) {
         data
     })
 }
+
 export function getColleaguesList(data) {
     return request({
         url: '/user/getColleaguesList',

@@ -26,7 +26,7 @@ namespace vue.Controllers
         /// <returns></returns>
         [Authorize(Policy = "Department_Get")]
         [HttpPost]
-        public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList([FromBody]PaginationRequestViewModel pagination)
+        public ReturnViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList([FromBody]PaginationRequestViewModel pagination)
         {
             return _department.GetDepartmentList(pagination);
         }
@@ -39,10 +39,7 @@ namespace vue.Controllers
         /// <returns></returns>
         [Authorize]
         [HttpPost]
-        public ReturnCMDViewModel<IEnumerable<Department>> GetAllDepartments()
-        {
-            return _department.GetAllDepartments();
-        }
+        public ReturnViewModel<IEnumerable<Department>> GetAllDepartments() => _department.GetAllDepartments();
 
 
         /// <summary>
@@ -52,10 +49,7 @@ namespace vue.Controllers
         /// <returns></returns>
         [Authorize(Policy = "Department_Add")]
         [HttpPost]
-        public ReturnCMDViewModel<Department> AddDepartment([FromBody]Department adepartment)
-        {
-            return _department.AddDepartment(adepartment);
-        }
+        public ReturnViewModel<Department> AddDepartment([FromBody]Department adepartment) => _department.AddDepartment(adepartment);
 
         /// <summary>
         /// 删除一个部门
@@ -64,10 +58,7 @@ namespace vue.Controllers
         /// <returns></returns>
         [Authorize(Policy = "Department_Del")]
         [HttpPost]
-        public ReturnCMDViewModel<Department> DeleteDepartment([FromBody]Department adepartment)
-        {
-            return _department.DeleteDepartment(adepartment);
-        }
+        public ReturnViewModel<Department> DeleteDepartment([FromBody]Department adepartment) => _department.DeleteDepartment(adepartment);
 
         /// <summary>
         /// 编辑一个部门
@@ -76,9 +67,6 @@ namespace vue.Controllers
         /// <returns></returns>
         [Authorize(Policy = "Department_Set")]
         [HttpPost]
-        public ReturnCMDViewModel<Department> EditDepartment([FromBody]Department adepartment)
-        {
-            return _department.EditDepartment(adepartment);
-        }
+        public ReturnViewModel<Department> EditDepartment([FromBody]Department adepartment) => _department.EditDepartment(adepartment);
     }
 }

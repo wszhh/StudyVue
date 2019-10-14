@@ -15,34 +15,34 @@ namespace vue.IService
         /// </summary>
         /// <param name="pagination"></param>
         /// <returns></returns>
-        ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList(PaginationRequestViewModel pagination);
+        ReturnViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList(PaginationRequestViewModel pagination);
 
         /// <summary>
         /// 获取部门列表
         /// </summary>
         /// <param name="pagination"></param>
         /// <returns></returns>
-        ReturnCMDViewModel<IEnumerable<Department>> GetAllDepartments();
+        ReturnViewModel<IEnumerable<Department>> GetAllDepartments();
 
         /// <summary>
         /// 添加一个部门
         /// </summary>
         /// <param name="adepartment"></param>
         /// <returns></returns>
-        ReturnCMDViewModel<Department> AddDepartment(Department adepartment);
+        ReturnViewModel<Department> AddDepartment(Department adepartment);
 
         /// <summary>
         /// 删
         /// </summary>
         /// <param name="adepartment"></param>
         /// <returns></returns>
-        ReturnCMDViewModel<Department> DeleteDepartment(Department adepartment);
+        ReturnViewModel<Department> DeleteDepartment(Department adepartment);
 
         /// <summary>
         /// 改
         /// </summary>
         /// <param name="adepartment"></param>
         /// <returns></returns>
-        ReturnCMDViewModel<Department> EditDepartment(Department adepartment);
+        ReturnViewModel<Department> EditDepartment(Department adepartment);
     }
 }

@@ -70,6 +70,11 @@
             /// </summary>
             ChangeClaimError = 10015,
 
+            /// <summary>
+            /// 分配角色失败
+            /// </summary>
+            SetRoleUsersError = 10016,
+
         }
     }
 }

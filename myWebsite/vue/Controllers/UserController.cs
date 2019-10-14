@@ -264,13 +264,13 @@ namespace vue.Controllers
         }
 
         /// <summary>
-        /// 获取个人数据
+        /// 个人信息-获取个人信息
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpGet]
         [Authorize(Policy = "MyInfo_Get")]
-        public async Task<ReturnCMDViewModel<UserInfoViewModel>> GetUserinfo(string token)
+        public async Task<ReturnViewModel<UserInfoViewModel>> GetUserinfo(string token)
         {
 
             if (!string.IsNullOrEmpty(token))
@@ -279,7 +279,7 @@ namespace vue.Controllers
                 if (tokenModel != null && tokenModel.ID != null)
                 {
                     var userInfo = await _userManager.FindByIdAsync(tokenModel.ID);
-                    return new ReturnCMDViewModel<UserInfoViewModel>()
+                    return new ReturnViewModel<UserInfoViewModel>()
                     {
                         code = (int)codes.Success,
                         data = new UserInfoViewModel()
@@ -298,7 +298,7 @@ namespace vue.Controllers
                     };
                 }
             }
-            return new ReturnCMDViewModel<UserInfoViewModel>()
+            return new ReturnViewModel<UserInfoViewModel>()
             {
                 code = (int)codes.GetUserInfoError,
                 message = "获取个人数据失败"
@@ -311,9 +311,9 @@ namespace vue.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public ReturnCMDViewModel<string> logout(string token)
+        public ReturnViewModel<string> logout(string token)
         {
-            return new ReturnCMDViewModel<string>()
+            return new ReturnViewModel<string>()
             {
                 code = (int)codes.Success,
                 message = "已退出"
@@ -334,13 +334,13 @@ namespace vue.Controllers
         }
 
         /// <summary>
-        /// 用户自己修改照片
+        /// 个人信息-用户自己修改照片
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "MyInfo_Set")]
-        public async Task<ReturnCMDViewModel<IActionResult>> SetPhoto([FromForm]IFormFile file)
+        public async Task<ReturnViewModel<IActionResult>> SetPhoto([FromForm]IFormFile file)
         {
             string token = Request.Headers["Authorization"];
             if (!string.IsNullOrEmpty(token) && file.ContentType == "image/jpeg")
@@ -358,18 +358,18 @@ namespace vue.Controllers
                     return _aspNetUsers.setUserPhoto(userInfo.Id, $"\\wwwroot\\photo\\{userInfo.UserName}__{newFilname}.jpg");
                 }
             }
-            return new ReturnCMDViewModel<IActionResult>() { code = (int)codes.TokenOrFileError, message = "token或者文件有误" };
+            return new ReturnViewModel<IActionResult>() { code = (int)codes.TokenOrFileError, message = "token或者文件有误" };
         }
 
 
         /// <summary>
-        /// 添加员工时添加照片
+        /// 员工管理-添加员工时添加照片
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Policy = "MyInfo_Set")]
-        public async Task<ReturnCMDViewModel<IActionResult>> SetStaffphoto([FromForm]string UserName, IFormFile file)
+        [Authorize(Policy = "Staff_Set")]
+        public async Task<ReturnViewModel<IActionResult>> SetStaffphoto([FromForm]string UserName, IFormFile file)
         {
             if (!string.IsNullOrEmpty(UserName) && file.ContentType == "image/jpeg")
             {
@@ -385,18 +385,18 @@ namespace vue.Controllers
                     return _aspNetUsers.setUserPhoto(userInfo.Id, $"\\wwwroot\\photo\\{userInfo.UserName}__{newFilname}.jpg");
                 }
             }
-            return new ReturnCMDViewModel<IActionResult>() { code = (int)codes.TokenOrFileError, message = "token或者文件有误" };
+            return new ReturnViewModel<IActionResult>() { code = (int)codes.TokenOrFileError, message = "token或者文件有误" };
         }
 
         /// <summary>
-        /// 设置部分个人信息
+        /// 个人信息-修改部分个人信息
         /// </summary>
         /// <param name="token"></param>
         /// <param name="userInfo"></param>
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "MyInfo_Set")]
-        public ReturnCMDViewModel<IActionResult> SetUserInfo([FromBody]UserInfoViewModel NewUserInfo)
+        public ReturnViewModel<IActionResult> SetUserInfo([FromBody]UserInfoViewModel NewUserInfo)
         {
             string token = Request.Headers["Authorization"];
             if (!string.IsNullOrEmpty(token) && NewUserInfo.RealName != null)
@@ -408,7 +408,7 @@ namespace vue.Controllers
                     //var UserInfo = await _userManager.FindByIdAsync(tokenModel.ID);
                 }
             }
-            return new ReturnCMDViewModel<IActionResult>()
+            return new ReturnViewModel<IActionResult>()
             {
                 code = (int)codes.ChangeUserInfoError,
                 message = "更改个人信息失败"
@@ -416,17 +416,17 @@ namespace vue.Controllers
         }
 
         /// <summary>
-        /// 修改密码
+        /// 个人信息-修改密码
         /// </summary>
         /// <param name="passwords">新旧密码</param>
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "MyInfo_SetPwd")]
-        public async Task<ReturnCMDViewModel<IActionResult>> ChangePassword([FromBody]ChangePasswordViewModel passwords)
+        public async Task<ReturnViewModel<IActionResult>> ChangePassword([FromBody]ChangePasswordViewModel passwords)
         {
             if (!ModelState.IsValid)
             {
-                new ReturnCMDViewModel<IActionResult>()
+                new ReturnViewModel<IActionResult>()
                 {
                     code = (int)codes.ChangePasswordError,
                     message = "更改密码失败,请检查是否填写正确"
@@ -442,7 +442,7 @@ namespace vue.Controllers
                     var result = await _userManager.ChangePasswordAsync(UserInfo, passwords.OldPassword, passwords.NewPassword);
                     if (result.Succeeded)
                     {
-                        return new ReturnCMDViewModel<IActionResult>()
+                        return new ReturnViewModel<IActionResult>()
                         {
                             code = (int)codes.Success,
                             message = "更改密码成功"
@@ -452,7 +452,7 @@ namespace vue.Controllers
 
                 }
             }
-            return new ReturnCMDViewModel<IActionResult>()
+            return new ReturnViewModel<IActionResult>()
             {
                 code = (int)codes.ChangePasswordError,
                 message = "更改密码失败，请检查原密码是否正确"
@@ -460,30 +460,30 @@ namespace vue.Controllers
         }
 
         /// <summary>
-        /// 获取同事列表
+        /// 查找同事-获取同事列表
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "Colleague_Get")]
-        public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> GetColleaguesList([FromBody]PaginationRequestViewModel pagination)
+        public ReturnViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> GetColleaguesList([FromBody]PaginationRequestViewModel pagination)
         {
-            return new ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()
+            return new ReturnViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()
             {
                 code = (int)codes.Success,
                 data = _aspNetUsers.getColleaguesList(pagination),
             };
         }
         /// <summary>
-        /// 查询同事列表
+        /// 员工管理-搜索同事列表
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Policy = "Colleague_Find")]
-        public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> FindColleagueByName([FromBody]PaginationRequestViewModel<string> pagination)
+        [Authorize(Policy = "Staff_Find")]
+        public ReturnViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> FindColleagueByName([FromBody]PaginationRequestViewModel<string> pagination)
         {
-            return new ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()
+            return new ReturnViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()
             {
                 code = (int)codes.Success,
                 data = _aspNetUsers.findColleagueByName(pagination),
@@ -492,30 +492,29 @@ namespace vue.Controllers
 
 
         /// <summary>
-        /// 获取同事列表
+        /// 员工管理-获取同事列表
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "Staff_Get")]
-        public ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> GetStaffList([FromBody]PaginationRequestViewModel pagination)
+        public ReturnViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> GetStaffList([FromBody]PaginationRequestViewModel pagination)
         {
-            return new ReturnCMDViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()
+            return new ReturnViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()
             {
                 code = (int)codes.Success,
                 data = _aspNetUsers.getStaffList(pagination),
             };
         }
 
-
         /// <summary>
-        /// 添加员工
+        /// 员工管理-添加员工
         /// </summary>
         /// <param name="registerViewModel"></param>
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "Staff_Add")]
-        public async Task<ReturnCMDViewModel<IActionResult>> AddStaff([FromBody] NewUser newUser)
+        public async Task<ReturnViewModel<IActionResult>> AddStaff([FromBody] NewUser newUser)
         {
             if (ModelState.IsValid)
             {
@@ -532,7 +531,7 @@ namespace vue.Controllers
                     return _aspNetUsers.setStaffInfo(newUser.UserName, newUser);
                 }
             }
-            return new ReturnCMDViewModel<IActionResult>() { code = (int)codes.AddStaffError, message = "添加失败" };
+            return new ReturnViewModel<IActionResult>() { code = (int)codes.AddStaffError, message = "添加员工失败" };
         }
 
         /// <summary>
@@ -570,9 +569,25 @@ namespace vue.Controllers
             });
         }
 
-
-
-
+        /// <summary>
+        /// 员工管理-修改员工信息
+        /// </summary>
+        /// <param name="userInfo"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Policy = "Staff_Set")]
+        public ReturnViewModel<IActionResult> SetStaffInfo([FromBody]UserInfoViewModel NewUserInfo)
+        {
+            if (NewUserInfo != null)
+            {
+                return _aspNetUsers.setUserInfos(NewUserInfo.Id, NewUserInfo);
+            }
+            return new ReturnViewModel<IActionResult>()
+            {
+                code = (int)codes.ChangeUserInfoError,
+                message = "更改个人信息失败，请检查是否填写正确"
+            };
+        }
 
     }
 }

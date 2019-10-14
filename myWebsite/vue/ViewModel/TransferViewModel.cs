@@ -1,7 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace vue.ViewModel
 {
@@ -10,10 +8,12 @@ namespace vue.ViewModel
         /// <summary>
         /// 操作类型
         /// </summary>
-        public string direction { get; set; }
+        public string Direction { get; set; }
         /// <summary>
         /// 变动的值
         /// </summary>
-        public List<string> movedKeys { get; set; }
+        public List<string> MovedKeys { get; set; }
+
+        public NAndOIentityRoleViewModel Roles { get; set; }
     }
 }

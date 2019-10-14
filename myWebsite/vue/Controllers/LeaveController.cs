@@ -23,9 +23,9 @@ namespace vue.Controllers
 
         [HttpGet]
         [Authorize(Policy = "CEO")]
-        public ReturnCMDViewModel<List<Leave>> GetLeaves()
+        public ReturnViewModel<List<Leave>> GetLeaves()
         {
-            return new ReturnCMDViewModel<List<Leave>>()
+            return new ReturnViewModel<List<Leave>>()
             {
                 code = (int)codes.Success,
                 data = _leave.GetLeave(),

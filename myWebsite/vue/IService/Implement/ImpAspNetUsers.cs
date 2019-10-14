@@ -67,12 +67,12 @@ namespace vue.IService.Implement
 
 
         /// <summary>
-        /// 更改部分用户信息
+        /// 更改部分员工信息
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="NewUserInfo"></param>
         /// <returns></returns>
-        public ReturnCMDViewModel<IActionResult> setUserInfo(string userId, UserInfoViewModel NewUserInfo)
+        public ReturnViewModel<IActionResult> setUserInfo(string userId, UserInfoViewModel NewUserInfo)
         {
             try
             {
@@ -87,18 +87,47 @@ namespace vue.IService.Implement
             }
             catch (Exception)
             {
-                return new ReturnCMDViewModel<IActionResult>() { code = (int)codes.TokenOrInfoError, message = "token或者信息格式不正确" };
+                return new ReturnViewModel<IActionResult>() { code = (int)codes.TokenOrInfoError, message = "token或者信息格式不正确" };
             }
-            return new ReturnCMDViewModel<IActionResult>() { code = (int)codes.Success, message = "个人信息更改成功" };
+            return new ReturnViewModel<IActionResult>() { code = (int)codes.Success, message = "个人信息更改成功" };
         }
 
         /// <summary>
-        /// 更新照片
+        /// 更改员工信息
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="NewUserInfo"></param>
+        /// <returns></returns>
+        public ReturnViewModel<IActionResult> setUserInfos(string userId, UserInfoViewModel NewUserInfo)
+        {
+            try
+            {
+                var oldUser = db.AspNetUsers.Where(x => x.Id == userId).FirstOrDefault();
+                oldUser.RealName = NewUserInfo.RealName;
+                oldUser.Sex = NewUserInfo.Sex;
+                oldUser.Address = NewUserInfo.Address;
+                oldUser.Birthday = NewUserInfo.Birthday;
+                oldUser.PhoneNumber = NewUserInfo.PhoneNumber;
+                oldUser.Introduction = NewUserInfo.Introduction;
+                oldUser.JoinTime = NewUserInfo.JoinTime;
+                oldUser.Salary = NewUserInfo.Salary;
+                oldUser.DepartmentId = NewUserInfo.DepartmentId;
+                db.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return new ReturnViewModel<IActionResult>() { code = (int)codes.TokenOrInfoError, message = "所填写的内容不正确不正确" };
+            }
+            return new ReturnViewModel<IActionResult>() { code = (int)codes.Success, message = "员工信息更改成功" };
+        }
+
+        /// <summary>
+        /// 员工自己更新照片
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="newPhotoPath"></param>
         /// <returns></returns>
-        public ReturnCMDViewModel<IActionResult> setUserPhoto(string userId, string newPhotoPath)
+        public ReturnViewModel<IActionResult> setUserPhoto(string userId, string newPhotoPath)
         {
             try
             {
@@ -108,9 +137,9 @@ namespace vue.IService.Implement
             }
             catch (Exception)
             {
-                return new ReturnCMDViewModel<IActionResult>() { code = (int)codes.TokenOrFileError, message = "照片更改失败" };
+                return new ReturnViewModel<IActionResult>() { code = (int)codes.TokenOrFileError, message = "照片更改失败" };
             }
-            return new ReturnCMDViewModel<IActionResult>() { code = (int)codes.Success, message = "照片更改成功" };
+            return new ReturnViewModel<IActionResult>() { code = (int)codes.Success, message = "照片更改成功" };
         }
 
         /// <summary>
@@ -139,7 +168,7 @@ namespace vue.IService.Implement
         }
 
 
-        public ReturnCMDViewModel<IActionResult> setStaffInfo(string UserName, NewUser NewUserInfo)
+        public ReturnViewModel<IActionResult> setStaffInfo(string UserName, NewUser NewUserInfo)
         {
             try
             {
@@ -159,9 +188,9 @@ namespace vue.IService.Implement
             }
             catch (Exception)
             {
-                return new ReturnCMDViewModel<IActionResult>() { code = (int)codes.TokenOrInfoError, message = "Id未找到或信息错误" };
+                return new ReturnViewModel<IActionResult>() { code = (int)codes.TokenOrInfoError, message = "Id未找到或信息错误" };
             }
-            return new ReturnCMDViewModel<IActionResult>() { code = (int)codes.Success, message = "添加成功" };
+            return new ReturnViewModel<IActionResult>() { code = (int)codes.Success, message = "添加成功" };
         }
     }
 }
