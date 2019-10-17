@@ -18,7 +18,7 @@ export function SetUserInfo(data) {
 
 export function getColleaguesList(data) {
     return request({
-        url: '/user/getColleaguesList',
+        url: '/user/GetColleaguesList',
         method: 'post',
         data
     })
@@ -32,9 +32,11 @@ export function FindColleagueByName(data) {
     })
 }
 
-export function GetStaffList(data) {
+
+//带排序 搜索
+export function GetStaffListByOrder(data) {
     return request({
-        url: '/user/getStaffList',
+        url: '/user/GetStaffListByOrder',
         method: 'post',
         data
     })

@@ -490,20 +490,18 @@ namespace vue.Controllers
             };
         }
 
-
         /// <summary>
-        /// 员工管理-获取同事列表
+        /// 员工管理-排序获取员工列表
         /// </summary>
-        /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "Staff_Get")]
-        public ReturnViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> GetStaffList([FromBody]PaginationRequestViewModel pagination)
+        public ReturnViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> GetStaffListByOrder([FromBody]PaginationRequestViewModel<OrderPropKeywordViewModel> pagination)
         {
             return new ReturnViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()
             {
                 code = (int)codes.Success,
-                data = _aspNetUsers.getStaffList(pagination),
+                data = _aspNetUsers.getStaffListByOrder(pagination),
             };
         }
 

@@ -143,16 +143,49 @@ namespace vue.IService.Implement
             return new ReturnViewModel<IActionResult>() { code = (int)codes.Success, message = "照片更改成功" };
         }
 
+
+
         /// <summary>
-        /// 获取员工列表
+        /// 排序搜索获取员工列表
         /// </summary>
         /// <param name="pagination"></param>
         /// <returns></returns>
-        public PaginationResponeViewModel<IEnumerable<UserInfoViewModel>> getStaffList(PaginationRequestViewModel pagination)
+        public PaginationResponeViewModel<IEnumerable<UserInfoViewModel>> getStaffListByOrder(PaginationRequestViewModel<OrderPropKeywordViewModel> pagination)
         {
+            var staffs = db.AspNetUsers.Select(x => x);
+            //排序
+            switch (pagination.data.Prop + "_" + pagination.data.Order)
+            {
+                case "id_descending":
+                    staffs = staffs.OrderByDescending(s => s.Id);
+                    break;
+                case "departmentId_descending":
+                    staffs = staffs.OrderByDescending(s => s.DepartmentId);
+                    break;
+                case "salary_descending":
+                    staffs = staffs.OrderByDescending(s => s.Salary);
+                    break;
+            }
+            if (!string.IsNullOrEmpty(pagination.data.keyword))
+            {
+                //搜索
+                switch (pagination.data.select)
+                {
+                    case "id":
+                        staffs = staffs.Where(x => x.Id.Contains(pagination.data.keyword));
+                        break;
+                    case "realName":
+                        staffs = staffs.Where(x => x.RealName.Contains(pagination.data.keyword));
+                        break;
+                    case "departmentId":
+                        var id = db.Department.Where(y => y.DepartmentName.Contains(pagination.data.keyword)).FirstOrDefault();
+                        staffs = staffs.Where(x => x.DepartmentId == (id == null ? 0 : id.DepartmentId));
+                        break;
+                }
+            }
             return new PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>()
             {
-                list = db.AspNetUsers.Skip(pagination.page).Take(pagination.limit).Select(userInfo => new UserInfoViewModel
+                list = staffs.Skip(pagination.page).Take(pagination.limit).Select(userInfo => new UserInfoViewModel
                 {
                     RealName = userInfo.RealName,
                     Birthday = userInfo.Birthday,
@@ -165,7 +198,7 @@ namespace vue.IService.Implement
                     DepartmentId = userInfo.DepartmentId,
                     Introduction = userInfo.Introduction
                 }),
-                total = db.AspNetUsers.Count()
+                total = staffs.Count()
             };
         }
 

@@ -45,12 +45,14 @@ namespace vue.IService
         /// <returns></returns>
         PaginationResponeViewModel<IEnumerable<UserInfoViewModel>> findColleagueByName(PaginationRequestViewModel<string> pagination);
 
+
+
         /// <summary>
-        /// 有权限获取员工列表
+        /// 排序搜索获取员工列表
         /// </summary>
         /// <param name="pagination"></param>
         /// <returns></returns>
-        PaginationResponeViewModel<IEnumerable<UserInfoViewModel>> getStaffList(PaginationRequestViewModel pagination);
+        PaginationResponeViewModel<IEnumerable<UserInfoViewModel>> getStaffListByOrder(PaginationRequestViewModel<OrderPropKeywordViewModel> pagination);
 
         /// <summary>
         /// 添加员工成功后添加员工信息

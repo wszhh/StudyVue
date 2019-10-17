@@ -345,23 +345,19 @@
         <!-- 搜索框 -->
         <el-input
           v-permission="['Staff_Find']"
-          placeholder="请输入员工姓名"
+          placeholder="请输入..."
           class="input-with-select"
           clearable
-          v-model="keyword"
-          style="width: 220px;"
+          v-model="OrderPropKeyword.keyword"
+          style="width: 350px;"
+          @clear="GetList"
         >
-          <!-- <el-select v-model="select" slot="prepend" placeholder="请选择">
-          <el-option label="餐厅名" value="1"></el-option>
-          <el-option label="订单号" value="2"></el-option>
-          <el-option label="用户电话" value="3"></el-option>
-          </el-select>-->
-          <el-button
-            slot="append"
-            icon="el-icon-search"
-            @click="FindColleagueByName"
-            @keyup.enter="FindColleagueByName"
-          ></el-button>
+          <el-select v-model="OrderPropKeyword.select" slot="prepend" style="width:80px">
+            <el-option label="编号" value="id"></el-option>
+            <el-option label="姓名" value="realName"></el-option>
+            <el-option label="部门" value="departmentId"></el-option>
+          </el-select>
+          <el-button slot="append" icon="el-icon-search" @click="GetList" @keyup.enter="GetList"></el-button>
         </el-input>
         <!-- 添加员工 -->
         <el-button
@@ -369,15 +365,6 @@
           v-permission="['Staff_Add']"
           @click="AdddialogFormVisible = true"
         >添加员工</el-button>
-      </div>
-
-      <div>
-        <el-row>
-          <el-col :span="6"></el-col>
-          <el-col :span="6"></el-col>
-          <el-col :span="6"></el-col>
-          <el-col :span="6"></el-col>
-        </el-row>
       </div>
     </div>
 
@@ -393,10 +380,11 @@
         highlight-current-row
         :stripe="true"
         height="65vh"
+        @sort-change="tableOrder"
       >
-        <el-table-column type="selection" width="45" align="center"></el-table-column>
+        <!-- <el-table-column type="selection" width="45" align="center"></el-table-column> -->
 
-        <el-table-column align="center" label="编号" width="95" prop="id"></el-table-column>
+        <el-table-column align="center" label="编号" width="95" prop="id" sortable></el-table-column>
 
         <el-table-column align="center" label="姓名" width="95">
           <template slot-scope="scope">
@@ -426,13 +414,21 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="部门" align="center">
-          <template slot-scope="scope">{{ DepartmengFormat( scope.row.departmentId )}}</template>
-        </el-table-column>
+        <el-table-column
+          label="部门"
+          align="center"
+          :formatter="DepartmengFormat"
+          prop="departmentId"
+          sortable
+        ></el-table-column>
 
         <el-table-column label="电话" align="center" width="108" prop="phoneNumber"></el-table-column>
 
-        <el-table-column label="薪资" width="80" align="center" prop="salary"></el-table-column>
+        <el-table-column label="薪资" width="80" align="center" prop="salary" sortable>
+          <template slot-scope="{row}">
+            <span :style="salaryStyle(row.salary)">{{row.salary}}</span>
+          </template>
+        </el-table-column>
 
         <el-table-column label="地址" min-width="166px" align="center" prop="address"></el-table-column>
 
@@ -475,7 +471,7 @@
         :total="total"
         :page.sync="listQuery.page"
         :limit.sync="listQuery.limit"
-        @pagination="GetList"
+        @pagination="GetList()"
       />
     </div>
   </div>
@@ -485,12 +481,12 @@
 import Pagination from "@/components/Pagination";
 import { GetAllDepartments } from "@/api/department";
 import {
-  GetStaffList,
   SetStaffInfo,
   FindColleagueByName,
   GetUserinfo,
   DeleteAStaff,
-  GetStaffPhoto
+  GetStaffPhoto,
+  GetStaffListByOrder
 } from "@/api/StaffInfoManage";
 import { getToken } from "@/utils/auth";
 import { CheckUserName, AddStaff } from "@/api/user";
@@ -541,7 +537,6 @@ export default {
       listLoading: true,
       //分页相关
       total: 0,
-      keyword: "",
       listQuery: {
         page: 1,
         limit: 10
@@ -549,7 +544,13 @@ export default {
       FindByname: "",
       formLabelWidth: "120px",
       AdddialogFormVisible: false,
-      ChangedialogFormVisible: false
+      ChangedialogFormVisible: false,
+      OrderPropKeyword: {
+        Order: "",
+        prop: "",
+        Keyword: "",
+        select: "realName"
+      }
     };
   },
   created() {
@@ -666,9 +667,10 @@ export default {
     async GetList() {
       this.listLoading = true;
       const { limit, page } = this.listQuery;
-      const { data } = await GetStaffList({
+      const { data } = await GetStaffListByOrder({
         limit: limit,
-        page: limit * (page - 1)
+        page: limit * (page - 1),
+        data: this.OrderPropKeyword
       });
       this.list = data.list;
       this.total = data.total;
@@ -683,10 +685,10 @@ export default {
       const { data } = await GetAllDepartments();
       this.options = data;
     },
-    DepartmengFormat(departmentId) {
+    DepartmengFormat(row, column) {
       var name = "暂未分配";
       this.options.forEach(data => {
-        if (data.departmentId == departmentId) {
+        if (data.departmentId == row.departmentId) {
           name = data.departmentName;
         }
       });
@@ -729,12 +731,37 @@ export default {
           this.GetList();
         })
         .catch(_ => {});
+    },
+    //给工资添加样式
+    salaryStyle(salary) {
+      if (salary < 5000) {
+        return "color:blue";
+      } else if (salary >= 5000 && salary < 10000) {
+        return "color:orange";
+      } else if (salary >= 10000) {
+        return "color:red";
+      }
+    },
+    //表格排序事件
+    async tableOrder({ prop, order }) {
+      this.OrderPropKeyword = {
+        prop,
+        order,
+        keyword: this.OrderPropKeyword.keyword,
+        select: this.OrderPropKeyword.select
+      };
+      this.GetList();
     }
   }
 };
 </script>
 
+
 <style>
+.input-with-select .el-input-group__prepend {
+  background-color: #fff;
+}
+
 .pwdWidth {
   width: 250px;
 }

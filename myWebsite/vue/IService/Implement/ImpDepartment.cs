@@ -25,7 +25,7 @@ namespace vue.IService.Implement
                 {
                     code = (int)codes.AddDepartmentError,
                     data = adepartment,
-                    message = $"部门\"{adepartment.DepartmentName}\"已存在,请更改后重试"
+                    message = $"\"{adepartment.DepartmentName}\"已存在,请更改后重试"
                 };
             }
             try
@@ -39,7 +39,7 @@ namespace vue.IService.Implement
                 {
                     code = (int)codes.AddDepartmentError,
                     data = adepartment,
-                    message = $"部门\"{adepartment.DepartmentName}\"添加失败"
+                    message = $"\"{adepartment.DepartmentName}\"添加失败"
                     //message = i.Message
                 };
             }
@@ -47,7 +47,7 @@ namespace vue.IService.Implement
             {
                 code = (int)codes.Success,
                 data = adepartment,
-                message = $"部门\"{adepartment.DepartmentName}\"添加成功"
+                message = $"\"{adepartment.DepartmentName}\"添加成功"
             };
 
         }
@@ -75,12 +75,22 @@ namespace vue.IService.Implement
         /// <returns></returns>
         public ReturnViewModel<Department> DeleteDepartment(Department adepartment)
         {
+            //先检查该部门下是否还有员工
+            if (db.AspNetUsers.Where(x => x.DepartmentId == adepartment.DepartmentId) != null)
+            {
+                return new ReturnViewModel<Department>()
+                {
+                    code = (int)codes.DeleteDepartmentError,
+                    data = adepartment,
+                    message = $"\"{adepartment.DepartmentName}\"删除失败，该部门下还有员工"
+                };
+            };
+            //没有才能删除
             try
             {
-                var department = db.Department.Where(x => x.DepartmentName == adepartment.DepartmentName).First();
+                var department = db.Department.Where(x => x.DepartmentId == adepartment.DepartmentId).First();
                 db.Department.Remove(department);
                 db.SaveChanges();
-
             }
             catch (Exception)
             {
@@ -88,14 +98,14 @@ namespace vue.IService.Implement
                 {
                     code = (int)codes.DeleteDepartmentError,
                     data = adepartment,
-                    message = $"部门\"{adepartment.DepartmentName}\"删除失败"
+                    message = $"\"{adepartment.DepartmentName}\"删除失败"
                 };
             }
             return new ReturnViewModel<Department>()
             {
                 code = (int)codes.Success,
                 data = adepartment,
-                message = $"部门\"{adepartment.DepartmentName}\"删除成功"
+                message = $"\"{adepartment.DepartmentName}\"删除成功"
             };
         }
 
@@ -118,19 +128,20 @@ namespace vue.IService.Implement
                 {
                     code = (int)codes.EditDepartmentError,
                     data = adepartment,
-                    message = $"部门\"{adepartment.DepartmentName}\"编辑失败"
+                    message = $"\"{adepartment.DepartmentName}\"编辑失败"
                 };
             }
             return new ReturnViewModel<Department>()
             {
                 code = (int)codes.Success,
                 data = adepartment,
-                message = $"部门\"{adepartment.DepartmentName}\"编辑成功"
+                message = $"\"{adepartment.DepartmentName}\"编辑成功"
             };
         }
 
         /// <summary>
         /// 不分页获取所有部门
+        /// 用于列表展示
         /// </summary>
         /// <returns></returns>
         public ReturnViewModel<IEnumerable<Department>> GetAllDepartments() => new ReturnViewModel<IEnumerable<Department>>

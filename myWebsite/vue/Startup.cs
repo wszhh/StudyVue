@@ -46,8 +46,6 @@ namespace vue
 
             #region 数据库、IdentityService
             services.AddDbContext<HRCContext>(options => { options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")); });
-            //services.AddDbContext<DataContext>(options => { options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")); });
-            //services.AddDbContext<IdentityDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("vue")));
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("vue")));
             services.AddDefaultIdentity<NewUser>().AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
             #endregion
@@ -227,17 +225,5 @@ namespace vue
             app.UseMvc();
         }
     }
-    //public enum ApiVersions
-    //{
-    //    /// <summary>
-    //    /// v1 版本
-    //    /// </summary>
-    //    v1 = 1,
-    //    /// <summary>
-    //    /// v2 版本
-    //    /// </summary>
-    //    v2 = 2,
-    //}
-
 }
 

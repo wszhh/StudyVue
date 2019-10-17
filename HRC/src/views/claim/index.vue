@@ -36,7 +36,7 @@
       style="width: 100%"
       fit
       highlight-current-row
-      stripe="true"
+      :stripe="true"
       height="87vh"
     >
       <el-table-column prop="name" label="角色" align="center"></el-table-column>

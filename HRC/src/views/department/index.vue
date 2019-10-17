@@ -16,7 +16,7 @@
         border
         fit
         highlight-current-row
-        stripe="true"
+        :stripe="true"
         height="65vh"
         @selection-change="handleSelectionChange"
       >
