@@ -24,7 +24,7 @@ export default {
   },
   data() {
     return {
-      title: '人 事 关 系 管 理 系 统',
+      title: '人 事 管 理 系 统',
       logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
     }
   }

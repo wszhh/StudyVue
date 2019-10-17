@@ -30,10 +30,11 @@ namespace vue.Controllers
         [HttpGet]
         public ReturnViewModel<string> GetTime()
         {
+
             return new ReturnViewModel<string>()
             {
                 code = (int)codes.Success,
-                data = DateTime.Now.ToString(),
+                data = DateTime.Now.ToString()
             };
         }
 

@@ -28,8 +28,17 @@
         <el-button type="primary" @click="ClaimdialogVisible = true,getCheckedNodes()">确 定</el-button>
       </span>
     </el-dialog>
-    <!-- 角色表 -->
-    <el-table :data="tableData" border style="width: 100%">
+    <!-- 角色表格 -->
+    <!-- 暂时就是这么个样式 以后再改 2019年10月15日 21时56分21秒-->
+    <el-table
+      :data="tableData"
+      border
+      style="width: 100%"
+      fit
+      highlight-current-row
+      stripe="true"
+      height="87vh"
+    >
       <el-table-column prop="name" label="角色" align="center"></el-table-column>
       <el-table-column
         fixed="right"
@@ -72,6 +81,7 @@ import {
 } from "@/api/Claim";
 
 import checkPermission from "@/utils/permission"; // 权限判断函数
+import { type } from "os";
 
 export default {
   name: "claim",
@@ -156,7 +166,7 @@ export default {
       this.GetUsersInRolee(this.RightIdentityRole, this.LeftIdentityRole);
     },
     deletedBtn(row) {
-      this.$confirm(`确认删除\"${row.name}\"？`)
+      this.$confirm(`确认删除\"${row.name}\"？`, { type: "warning" })
         .then(_ => {
           this.$message({
             message: `删除\"${row.name}\"成功`,

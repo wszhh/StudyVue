@@ -1,11 +1,13 @@
 <template>
   <div id="DepartmentManage " class="zdy-border">
-    <div id="ControBtn" class="Padding">
+    <!-- 功能按钮 -->
+    <div class="table-head">
       <el-button v-permission="['Department_Add']" type="primary" @click="open">增加部门</el-button>
       <el-tooltip class="item" effect="dark" content="没写" placement="bottom">
         <el-button v-permission="['Department_Del']" type="danger">删除选中</el-button>
       </el-tooltip>
     </div>
+    <!-- 部门信息表格 -->
     <div>
       <el-table
         v-loading="listLoading"
@@ -14,9 +16,16 @@
         border
         fit
         highlight-current-row
+        stripe="true"
+        height="65vh"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="50" align="center"></el-table-column>
+        <el-table-column
+          type="selection"
+          width="50"
+          align="center"
+          v-if="checkPermission(['Department_Del'])"
+        ></el-table-column>
         <el-table-column align="center" label="ID" width="95">
           <template slot-scope="scope">{{ scope.row.departmentId}}</template>
         </el-table-column>
@@ -30,13 +39,10 @@
                 style="width:80%"
                 size="small"
               />
-              <el-button
-                class="cancel-btn"
-                size="small"
-                icon="el-icon-refresh"
-                type="warning"
-                @click="cancelEdit(row)"
-              >取消</el-button>
+              <!-- 编辑的取消按钮 -->
+              <el-button class="cancel-btn" size="small" type="text" @click="cancelEdit(row)">
+                <svg-icon icon-class="times-fill" />
+              </el-button>
             </template>
             <span v-else>{{ row.departmentName }}</span>
           </template>
@@ -49,32 +55,30 @@
           fixed="right"
           v-if="checkPermission(['Department_Del','Department_Set'])"
         >
+          <!-- 编辑 -->
           <template slot-scope="{row}">
-            <el-button
-              v-if="row.edit"
-              type="success"
-              size="small"
-              icon="el-icon-circle-check-outline"
-              @click="confirmEdit(row)"
-            >确定</el-button>
-
+            <el-button v-if="row.edit" type="text" size="small" @click="confirmEdit(row)">
+              <svg-icon icon-class="check-fill" />
+            </el-button>
             <el-button
               v-permission="['Department_Set']"
               v-else
-              type="primary"
+              type="text"
               size="small"
-              icon="el-icon-edit"
               @click="row.edit=!row.edit"
-            >编辑</el-button>
-
+            >
+              <svg-icon icon-class="edit-fill" />
+            </el-button>
+            <!-- 删除 -->
             <el-button
               v-permission="['Department_Del']"
               slot="reference"
-              type="danger"
+              type="text"
               size="small"
-              icon="el-icon-delete"
               @click="deletedBtn(row)"
-            >删除</el-button>
+            >
+              <svg-icon icon-class="delete-fill" />
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -160,10 +164,6 @@ export default {
     cancelEdit(row) {
       row.departmentId = row.originaldepartmentId;
       row.edit = false;
-      this.$message({
-        message: "未更改",
-        type: "warning"
-      });
     },
     confirmEdit(row) {
       row.edit = false;
@@ -185,7 +185,7 @@ export default {
     },
     open() {
       this.$prompt("请输入部门名称", "添加一个部门", {
-        confirmButtonText: "提交",
+        confirmButtonText: "确定",
         cancelButtonText: "取消",
         inputValidator: function(value) {
           if (value == null) {
@@ -203,12 +203,7 @@ export default {
             }
           });
         })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "取消添加"
-          });
-        });
+        .catch(() => {});
     },
     deletedBtn(row) {
       this.dialogVisible = true;

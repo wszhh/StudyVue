@@ -80,26 +80,26 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/StaffInfoManage/index',
     name: 'StaffInfoManage',
-    meta: { roles: ["MyInfo_Get", "Colleague_Get", "Staff_Get"], title: '员工资料管理', icon: 'example', noCache: true },
+    meta: { roles: ["MyInfo_Get", "Colleague_Get", "Staff_Get"], title: '员工资料管理', icon: 'user', noCache: true },
     alwaysShow: true,
     children: [
       {
         path: 'MyInfo',
         name: 'MyInfo',
         component: () => import('@/views/StaffInfoManage/MyInfo/index'),
-        meta: { roles: ["MyInfo_Get"], title: '个人信息', icon: 'table', noCache: true }
+        meta: { roles: ["MyInfo_Get"], title: '个人信息', icon: 'account-fill', noCache: true }
       },
       {
         path: 'FindColleagues',
         name: 'FindColleagues',
         component: () => import('@/views/StaffInfoManage/FindColleagues/index'),
-        meta: { roles: ["Colleague_Get"], title: '查找同事', icon: 'tree', noCache: true }
+        meta: { roles: ["Colleague_Get"], title: '查找同事', icon: 'search-fill', noCache: true }
       },
       {
         path: 'StaffManage',
         name: 'StaffManage',
         component: () => import('@/views/StaffInfoManage/StaffManage/index'),
-        meta: { roles: ["Staff_Get"], title: '员工管理', icon: 'tree', noCache: true }
+        meta: { roles: ["Staff_Get"], title: '员工管理', icon: 'user-group-fill', noCache: true }
       }
     ]
   },
@@ -111,7 +111,7 @@ export const asyncRoutes = [
       path: 'index',
       name: 'claim',
       component: () => import('@/views/claim/index'),
-      meta: { roles: ["Claim_Get"], title: '权限管理', icon: 'form', noCache: true }
+      meta: { roles: ["Claim_Get"], title: '权限管理', icon: 'key-fill', noCache: true }
     }]
   },
 
@@ -202,7 +202,7 @@ export const asyncRoutes = [
         path: 'index',
         name: 'department',
         component: () => import('@/views/department/index'),
-        meta: { roles: ["Department_Get"], title: '部门管理', icon: 'form', noCache: true }
+        meta: { roles: ["Department_Get"], title: '部门管理', icon: 'tree', noCache: true }
       }
     ]
   },

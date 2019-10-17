@@ -21,9 +21,10 @@ namespace vue.IService.Implement
         /// <returns></returns>
         public PaginationResponeViewModel<IEnumerable<UserInfoViewModel>> findColleagueByName(PaginationRequestViewModel<string> pagination)
         {
-            var data = db.AspNetUsers.Where(x => x.RealName.Contains(pagination.data)).Skip(pagination.page).Take(pagination.limit)
+            var data = db.AspNetUsers.Where(x => x.RealName.Contains(pagination.data))
                 .Select(userInfo => new UserInfoViewModel
                 {
+                    Id = userInfo.Id,
                     RealName = userInfo.RealName,
                     Birthday = userInfo.Birthday,
                     Sex = userInfo.Sex,
@@ -31,12 +32,12 @@ namespace vue.IService.Implement
                     Salary = userInfo.Salary,
                     Address = userInfo.Address,
                     JoinTime = userInfo.JoinTime,
-                    Id = userInfo.Id
+                    Introduction = userInfo.Introduction
                 });
             return new PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>()
             {
-                list = data,
                 total = data.Count(),
+                list = data.Skip(pagination.page).Take(pagination.limit),
             };
         }
 
@@ -98,7 +99,7 @@ namespace vue.IService.Implement
         /// <param name="userId"></param>
         /// <param name="NewUserInfo"></param>
         /// <returns></returns>
-        public ReturnViewModel<IActionResult> setUserInfos(string userId, UserInfoViewModel NewUserInfo)
+        public ReturnViewModel<IActionResult> setStaffInfos(string userId, UserInfoViewModel NewUserInfo)
         {
             try
             {
@@ -143,7 +144,7 @@ namespace vue.IService.Implement
         }
 
         /// <summary>
-        /// 有权限获取员工列表
+        /// 获取员工列表
         /// </summary>
         /// <param name="pagination"></param>
         /// <returns></returns>
@@ -162,6 +163,7 @@ namespace vue.IService.Implement
                     JoinTime = userInfo.JoinTime,
                     Id = userInfo.Id,
                     DepartmentId = userInfo.DepartmentId,
+                    Introduction = userInfo.Introduction
                 }),
                 total = db.AspNetUsers.Count()
             };

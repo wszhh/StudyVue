@@ -32,7 +32,7 @@ export function FindColleagueByName(data) {
     })
 }
 
-export function getStaffList(data) {
+export function GetStaffList(data) {
     return request({
         url: '/user/getStaffList',
         method: 'post',
@@ -43,6 +43,22 @@ export function getStaffList(data) {
 export function SetStaffInfo(data) {
     return request({
         url: '/user/SetStaffInfo',
+        method: 'post',
+        data
+    })
+}
+
+export function DeleteAStaff(data) {
+    return request({
+        url: '/user/DeleteAStaff',
+        method: 'post',
+        data
+    })
+}
+
+export function GetStaffPhoto(data) {
+    return request({
+        url: '/user/GetStaffPhoto',
         method: 'post',
         data
     })

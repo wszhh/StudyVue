@@ -580,7 +580,7 @@ namespace vue.Controllers
         {
             if (NewUserInfo != null)
             {
-                return _aspNetUsers.setUserInfos(NewUserInfo.Id, NewUserInfo);
+                return _aspNetUsers.setStaffInfos(NewUserInfo.Id, NewUserInfo);
             }
             return new ReturnViewModel<IActionResult>()
             {
@@ -589,5 +589,48 @@ namespace vue.Controllers
             };
         }
 
+        /// <summary>
+        /// 删除一个员工
+        /// </summary>
+        /// <param name="aUser"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Policy = "Staff_Del")]
+        public async Task<ReturnViewModel<IActionResult>> DeleteAStaff([FromBody]NewUser aUser)
+        {
+            if (aUser.Id != null)
+            {
+                NewUser user = await _userManager.FindByIdAsync(aUser.Id);
+                if (user != null)
+                {
+                    var result = await _userManager.DeleteAsync(user);
+                    if (result.Succeeded)
+                    {
+                        return new ReturnViewModel<IActionResult> { code = (int)codes.Success, message = $"用户\"{aUser.RealName}\"删除成功" };
+                    }
+                }
+            };
+            return new ReturnViewModel<IActionResult> { code = (int)codes.DeleteUserError, message = $"用户删除失败" };
+        }
+
+        /// <summary>
+        /// 获取员工照片
+        /// </summary>
+        /// <param name="newUser"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Policy = "Staff_Get")]
+        public async Task<ReturnViewModel<IActionResult>> GetStaffPhoto([FromBody]NewUser aUser)
+        {
+            if (aUser.Id != null)
+            {
+                NewUser user = await _userManager.FindByIdAsync(aUser.Id);
+                if (user != null)
+                {
+                    return new ReturnViewModel<IActionResult> { code = (int)codes.Success, data = Ok(PhotoToBase64String(user.Photo)), };
+                }
+            };
+            return new ReturnViewModel<IActionResult> { code = (int)codes.DeleteUserError, message = $"用户删除失败" };
+        }
     }
 }

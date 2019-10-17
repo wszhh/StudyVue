@@ -75,6 +75,11 @@
             /// </summary>
             SetRoleUsersError = 10016,
 
+            /// <summary>
+            /// 删除用户失败
+            /// </summary>
+            DeleteUserError = 10017,
+
         }
     }
 }

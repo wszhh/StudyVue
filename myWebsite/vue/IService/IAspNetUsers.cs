@@ -29,7 +29,7 @@ namespace vue.IService
         /// <param name="userId"></param>
         /// <param name="NewUserInfo"></param>
         /// <returns></returns>
-        ReturnViewModel<IActionResult> setUserInfos(string userId, UserInfoViewModel NewUserInfo);
+        ReturnViewModel<IActionResult> setStaffInfos(string userId, UserInfoViewModel NewUserInfo);
 
         /// <summary>
         /// 获取同事列表

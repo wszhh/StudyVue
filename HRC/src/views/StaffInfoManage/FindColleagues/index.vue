@@ -1,13 +1,14 @@
 <template>
   <div id="fengye" class="zdy-border">
     <!-- 顶端搜索 -->
-    <div style="width:450px;">
+    <div class="table-head">
       <el-input
         placeholder="请输入同事姓名"
         v-model="FindByname"
         class="input-with-select"
         clearable
         v-permission="['Colleague_Find']"
+        style="width:220"
       >
         <!-- <el-select v-model="select" slot="prepend" placeholder="请选择">
           <el-option label="餐厅名" value="1"></el-option>
@@ -23,7 +24,7 @@
         ></el-button>
       </el-input>
     </div>
-    <!-- 表格 -->
+    <!-- 同事信息表格 -->
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -32,6 +33,8 @@
       border
       fit
       highlight-current-row
+      :stripe="true"
+      height="65vh"
     >
       <el-table-column align="center" label="姓名" width="95">
         <template slot-scope="scope">{{ scope.row.realName}}</template>
@@ -46,11 +49,14 @@
           placeholder="暂无数据"
           style="width: 80%;"
           :disabled="true"
+          size="small"
         />
       </el-table-column>
 
       <el-table-column label="性别" width="100" align="center">
-        <template slot-scope="scope">{{ SexFormat(scope.row.sex) }}</template>
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.sex === 1 ? 'primary' : 'success'">{{SexFormat(scope.row.sex)}}</el-tag>
+        </template>
       </el-table-column>
 
       <el-table-column label="电话" align="center">
@@ -74,6 +80,7 @@
           placeholder="暂无数据"
           style="width: 80%;"
           :disabled="true"
+          size="small"
         />
       </el-table-column>
     </el-table>
