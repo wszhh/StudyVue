@@ -38,7 +38,6 @@ namespace vue
         {
             #region 依赖注入
             services.AddSingleton<ILeave, ImpLeave>();
-            services.AddSingleton<IStuList, ImpStuList>();
             services.AddSingleton<IDepartment, ImpDepartment>();
             services.AddSingleton<IAspNetUsers, ImpAspNetUsers>();
             services.AddSingleton<IClaim, ImpClaim>();

@@ -183,14 +183,21 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/page',
+    path: '/Attendance',
     component: Layout,
+    redirect: '/attendance/signin',
+    name: 'attendance',
+    alwaysShow: "true",
+    meta: {
+      title: '考勤管理',
+      icon: 'form', noCache: true
+    },
     children: [
       {
         path: 'index',
-        name: 'page',
-        component: () => import('@/views/page/index'),
-        meta: { title: '考勤管理', icon: 'form', noCache: true }
+        name: 'signin',
+        component: () => import('@/views/Attendance/Signin/index'),
+        meta: { title: '签到', icon: 'form', noCache: true }
       }
     ]
   },

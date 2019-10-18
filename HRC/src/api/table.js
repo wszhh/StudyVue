@@ -9,19 +9,5 @@ export function getList(params) {
   })
 }
 
-export function getStuList(data) {
-  return request({
-    url: '/Home/GetStuList',
-    method: 'post',
-    data
-  })
-}
 
-export function editStuList(data) {
-  return request({
-    url: '/Home/EditStuList',
-    method: 'post',
-    data
-  })
-}
 

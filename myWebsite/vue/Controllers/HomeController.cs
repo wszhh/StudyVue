@@ -12,18 +12,12 @@ namespace vue.Controllers
     /// <summary>
     /// 主页
     /// </summary>
-    //[EnableCors("AllowSameDomain")]
     [Route("api/[controller]/[action]")]
     //[Authorize(Policy = "CEO")]
     [ApiController]
     public class HomeController : Controller
     {
 
-        private readonly IStuList _stuList;
-        public HomeController(IStuList stuList)
-        {
-            _stuList = stuList;
-        }
 
 
         [Authorize(Policy = "Home_Get")]
@@ -38,26 +32,5 @@ namespace vue.Controllers
             };
         }
 
-        [HttpPost]
-        public IActionResult GetStuList([FromBody]PaginationRequestViewModel pagination)
-        {
-            var result = _stuList.GetList(pagination);
-            return Ok(new
-            {
-                code = codes.Success,
-                data = new
-                {
-                    result.list,
-                    result.total,
-                },
-            });
-        }
-
-        [HttpPost]
-        public IActionResult EditStuList([FromBody]StuList stuinfo)
-        {
-
-            return Ok(new { code = codes.Success, stuinfo });
-        }
     }
 }

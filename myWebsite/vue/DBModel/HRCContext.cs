@@ -35,9 +35,7 @@ namespace vue.DBModel
         public virtual DbSet<PaySlip> PaySlip { get; set; }
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<Salary> Salary { get; set; }
-        public virtual DbSet<StuList> StuList { get; set; }
         public virtual DbSet<SystemLog> SystemLog { get; set; }
-        public virtual DbSet<UserInfo> UserInfo { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -207,16 +205,16 @@ namespace vue.DBModel
 
                 entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
 
+                entity.Property(e => e.RealName)
+                    .HasMaxLength(20)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.Remake)
                     .HasColumnName("remake")
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
                 entity.Property(e => e.UserId).HasColumnName("UserID");
-
-                entity.Property(e => e.UserName)
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<CategoryItems>(entity =>
@@ -426,43 +424,6 @@ namespace vue.DBModel
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<StuList>(entity =>
-            {
-                entity.HasKey(e => e.Bmh)
-                    .HasName("PK__StuList__DE97B1704E1ED7FA");
-
-                entity.Property(e => e.Bmh)
-                    .HasColumnName("bmh")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.Dqdm).HasColumnName("dqdm");
-
-                entity.Property(e => e.Hjszd)
-                    .IsRequired()
-                    .HasColumnName("hjszd")
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.Mzmc)
-                    .IsRequired()
-                    .HasColumnName("mzmc")
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.Score)
-                    .IsRequired()
-                    .HasColumnName("score")
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.Sfzh)
-                    .IsRequired()
-                    .HasColumnName("sfzh")
-                    .HasMaxLength(255);
-
-                entity.Property(e => e.Xm)
-                    .IsRequired()
-                    .HasColumnName("xm")
-                    .HasMaxLength(255);
-            });
-
             modelBuilder.Entity<SystemLog>(entity =>
             {
                 entity.HasKey(e => e.LogId)
@@ -479,51 +440,6 @@ namespace vue.DBModel
                     .IsUnicode(false);
 
                 entity.Property(e => e.LogTime).HasColumnType("datetime");
-            });
-
-            modelBuilder.Entity<UserInfo>(entity =>
-            {
-                entity.HasKey(e => e.UserId)
-                    .HasName("PK__UserInfo__1788CCAC4427A628");
-
-                entity.Property(e => e.UserId).HasColumnName("UserID");
-
-                entity.Property(e => e.Avatar).IsUnicode(false);
-
-                entity.Property(e => e.BasePay).HasColumnType("money");
-
-                entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
-
-                entity.Property(e => e.DimissionTime).HasColumnType("datetime");
-
-                entity.Property(e => e.EntryTime).HasColumnType("datetime");
-
-                entity.Property(e => e.Id)
-                    .IsRequired()
-                    .HasMaxLength(450)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.RealName)
-                    .HasMaxLength(20)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserAddress)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserBirthday).HasColumnType("datetime");
-
-                entity.Property(e => e.UserNumber)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserRemarks)
-                    .HasMaxLength(250)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.UserTel)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
             });
         }
     }
