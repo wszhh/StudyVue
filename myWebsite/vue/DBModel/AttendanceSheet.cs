@@ -8,7 +8,7 @@ namespace vue.DBModel
         public int AttendanceId { get; set; }
         public DateTime? AttendanceStartTime { get; set; }
         public int? AttendanceType { get; set; }
-        public int? UserId { get; set; }
+        public string UserId { get; set; }
         public int? DepartmentId { get; set; }
         public string RealName { get; set; }
         public DateTime? ClockTime { get; set; }

@@ -9,31 +9,37 @@
                 :class="data.isSelected ? 'is-selected' : ''"
               >{{ data.day.split('-').slice(1).join('-') }}</span>
               <br />
-              <el-tag v-if="SignFormat(date, data)!=''">{{SignFormat(date, data)}}</el-tag>
+              <el-tag
+                :type="TagType(SignFormat(date, data))"
+                v-if="SignFormat(date, data)!=''"
+              >{{SignFormat(date, data)}}</el-tag>
             </template>
           </el-calendar>
         </div>
       </el-col>
       <el-col :span="10" class="table-head">
-        <el-button type="primary" style="height:10vh;width:100%">
+        <el-button
+          type="primary"
+          style="height:10vh;width:100%"
+          @click="Checkin"
+          :disabled="!BtnChecked"
+        >
           <span style="font-size:350%">签&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;到</span>
         </el-button>
         <el-collapse v-model="activeName">
-          <el-collapse-item title="上班时间" name="1">
-            <div>随便瞎写 我也不知道</div>
-            <div>随便瞎写 我也不知道</div>
+          <el-collapse-item title="正常签到截止时间" name="1">
+            <div>上午9:00</div>
           </el-collapse-item>
-          <el-collapse-item title="显示范围" name="2">
+          <el-collapse-item title="标签解释" name="2">
+            <div>
+              <el-tag type="success">正常</el-tag>今日签到情况正常
+            </div>
+            <div>
+              <el-tag type="danger">未签到</el-tag>没有进行签到，可能是放假、请假、缺勤
+            </div>
+          </el-collapse-item>
+          <el-collapse-item title="数据范围" name="3">
             <div>只显示当前月的信息</div>
-          </el-collapse-item>
-          <el-collapse-item title="效率 Efficiency" name="3">
-            <div>简化流程：设计简洁直观的操作流程；</div>
-            <div>清晰明确：语言表达清晰且表意明确，让用户快速理解进而作出决策；</div>
-            <div>帮助用户识别：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。</div>
-          </el-collapse-item>
-          <el-collapse-item title="可控 Controllability" name="4">
-            <div>用户决策：根据场景可给予用户操作建议或安全提示，但不能代替用户进行决策；</div>
-            <div>结果可控：用户可以自由的进行操作，包括撤销、回退和终止当前操作等。</div>
           </el-collapse-item>
         </el-collapse>
       </el-col>
@@ -43,20 +49,48 @@
 
 
 <script>
-import { GetSignInInfo, GetCategory } from "@/api/Attendance";
+import {
+  GetSignInInfo,
+  GetCategory,
+  IsChecked,
+  Checkin
+} from "@/api/Attendance";
 export default {
   data() {
     return {
       SignInInfo: null,
       activeName: "1",
-      Category: null
+      Category: null,
+      BtnChecked: true
     };
   },
   created() {
-    this.GetSignInInfo();
     this.GetCategory();
+    this.GetSignInInfo();
+    this.IsChecked();
   },
   methods: {
+    async IsChecked() {
+      const { data } = await IsChecked();
+      console.log(data);
+      this.BtnChecked = data;
+    },
+    async Checkin() {
+      await Checkin();
+      this.GetSignInInfo();
+    },
+    TagType(value) {
+      switch (value) {
+        case "正常":
+          return "success";
+        case "未签到":
+          return "danger";
+        case "迟到":
+          return "warning";
+        case "请假":
+          return "info";
+      }
+    },
     async GetSignInInfo() {
       const { data } = await GetSignInInfo();
       this.SignInInfo = data;
@@ -69,16 +103,19 @@ export default {
       if (this.SignInInfo != null) {
         var result = 0;
         this.SignInInfo.forEach(item => {
-          // console.log(data.day + "___" + item.date.substring(0,10));
-          if (data.day == item.date.substring(0, 10)) {
+          //console.log(date + "___" + item.date.substring(0,10));
+          var date = item.date.substring(0, 10);
+          if (data.day == date) {
             result = item.signInType;
           }
         });
-        this.Category.forEach(item => {
-          if (result == item.ciId) {
-            result = item.ciName;
-          }
-        });
+        if (this.Category != null) {
+          this.Category.forEach(item => {
+            if (result == item.ciId) {
+              result = item.ciName;
+            }
+          });
+        }
         return result;
       }
     }

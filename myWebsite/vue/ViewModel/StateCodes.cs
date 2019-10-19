@@ -80,6 +80,11 @@
             /// </summary>
             DeleteUserError = 10017,
 
+            /// <summary>
+            /// 签到相关错误
+            /// </summary>
+            AttendanceError = 10018,
+
         }
     }
 }

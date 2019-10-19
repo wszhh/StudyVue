@@ -16,3 +16,20 @@ export function GetCategory(data) {
         data
     })
 }
+
+
+export function IsChecked(data) {
+    return request({
+        url: '/Attendance/IsChecked',
+        method: 'post',
+        data
+    })
+}
+
+export function Checkin(data) {
+    return request({
+        url: '/Attendance/Checkin',
+        method: 'post',
+        data
+    })
+}

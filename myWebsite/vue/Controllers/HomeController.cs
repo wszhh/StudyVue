@@ -22,14 +22,16 @@ namespace vue.Controllers
 
         [Authorize(Policy = "Home_Get")]
         [HttpGet]
-        public ReturnViewModel<string> GetTime()
+        public IActionResult GetTime()
         {
 
-            return new ReturnViewModel<string>()
+            return Ok(new
             {
-                code = (int)codes.Success,
+                code = 20000,
                 data = DateTime.Now.ToString()
-            };
+
+            })
+            ;
         }
 
     }

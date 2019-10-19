@@ -41,6 +41,7 @@ namespace vue
             services.AddSingleton<IDepartment, ImpDepartment>();
             services.AddSingleton<IAspNetUsers, ImpAspNetUsers>();
             services.AddSingleton<IClaim, ImpClaim>();
+            services.AddSingleton<IAttendance, ImpAttendance>();
             #endregion
 
             #region 数据库、IdentityService

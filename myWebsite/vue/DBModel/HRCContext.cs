@@ -214,7 +214,10 @@ namespace vue.DBModel
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
-                entity.Property(e => e.UserId).HasColumnName("UserID");
+                entity.Property(e => e.UserId)
+                    .HasColumnName("UserID")
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<CategoryItems>(entity =>
