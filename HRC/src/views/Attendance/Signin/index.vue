@@ -67,12 +67,11 @@ export default {
   created() {
     this.GetCategory();
     this.GetSignInInfo();
-    this.IsChecked();
+    //this.IsChecked();
   },
   methods: {
-    async IsChecked() {
-      const { data } = await IsChecked();
-      console.log(data);
+    IsChecked() {
+      const { data } = IsChecked();
       this.BtnChecked = data;
     },
     async Checkin() {
@@ -103,7 +102,6 @@ export default {
       if (this.SignInInfo != null) {
         var result = 0;
         this.SignInInfo.forEach(item => {
-          //console.log(date + "___" + item.date.substring(0,10));
           var date = item.date.substring(0, 10);
           if (data.day == date) {
             result = item.signInType;

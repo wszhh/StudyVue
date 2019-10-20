@@ -206,6 +206,7 @@ namespace vue.DBModel
                 entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
 
                 entity.Property(e => e.RealName)
+                    .IsRequired()
                     .HasMaxLength(20)
                     .IsUnicode(false);
 
@@ -215,6 +216,7 @@ namespace vue.DBModel
                     .IsUnicode(false);
 
                 entity.Property(e => e.UserId)
+                    .IsRequired()
                     .HasColumnName("UserID")
                     .HasMaxLength(500)
                     .IsUnicode(false);

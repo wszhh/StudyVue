@@ -45,7 +45,7 @@ namespace vue
             #endregion
 
             #region 数据库、IdentityService
-            services.AddDbContext<HRCContext>(options => { options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")); });
+            services.AddDbContext<HRCContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("vue")));
             services.AddDefaultIdentity<NewUser>().AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
             #endregion

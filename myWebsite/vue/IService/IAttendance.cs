@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using vue.Areas.Identity.Data;
 using vue.DBModel;
 using vue.ViewModel;
-using static vue.Controllers.AttendanceController;
 
 namespace vue.IService
 {
@@ -15,6 +15,17 @@ namespace vue.IService
         ReturnViewModel<IEnumerable<CategoryItems>> GetAttendanceCategory();
 
 
-        ReturnViewModel<IEnumerable<signinModel>> GetSignInInfoById(string id);
+        /// <summary>
+        /// 是否已经签到过
+        /// </summary>
+        /// <returns></returns>
+        ReturnViewModel<bool> IsChecked(string Id);
+
+        /// <summary>
+        /// 签到
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        ReturnViewModel<bool> Checkin(NewUser user);
     }
 }

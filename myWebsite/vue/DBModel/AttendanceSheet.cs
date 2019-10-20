@@ -9,9 +9,9 @@ namespace vue.DBModel
         public DateTime? AttendanceStartTime { get; set; }
         public int? AttendanceType { get; set; }
         public string UserId { get; set; }
-        public int? DepartmentId { get; set; }
+        public int DepartmentId { get; set; }
         public string RealName { get; set; }
-        public DateTime? ClockTime { get; set; }
+        public DateTime ClockTime { get; set; }
         public DateTime? ClockOutTime { get; set; }
         public int? Workinghours { get; set; }
         public string Remake { get; set; }
