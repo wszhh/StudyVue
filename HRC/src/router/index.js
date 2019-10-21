@@ -190,14 +190,20 @@ export const asyncRoutes = [
     alwaysShow: "true",
     meta: {
       title: '考勤管理',
-      icon: 'form', noCache: true
+      icon: 'nail-fixed-fill', noCache: true
     },
     children: [
       {
-        path: 'index',
+        path: 'signin',
         name: 'signin',
         component: () => import('@/views/Attendance/Signin/index'),
-        meta: { title: '签到', icon: 'form', noCache: true }
+        meta: { title: '签到', icon: 'star-circle-fill', noCache: true }
+      },
+      {
+        path: 'CheckAttendance',
+        name: 'CheckAttendance',
+        component: () => import('@/views/Attendance/CheckAttendance/index'),
+        meta: { title: '查看考勤记录', icon: 'calendar alt-fill', noCache: true }
       }
     ]
   },

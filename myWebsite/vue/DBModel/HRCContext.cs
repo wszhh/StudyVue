@@ -210,8 +210,7 @@ namespace vue.DBModel
                     .HasMaxLength(20)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Remake)
-                    .HasColumnName("remake")
+                entity.Property(e => e.Remark)
                     .HasMaxLength(500)
                     .IsUnicode(false);
 

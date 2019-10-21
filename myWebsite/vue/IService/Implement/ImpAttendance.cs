@@ -24,9 +24,10 @@ namespace vue.IService.Implement
             {
                 UserId = user.Id,
                 RealName = user.RealName,
+                AttendanceStartTime = time.Date,
                 DepartmentId = user.DepartmentId,
                 ClockTime = time,
-                AttendanceType = FormatType(time)
+                AttendanceType = SigninModel.FormatType(time)
             });
             db.SaveChangesAsync();
             return new ReturnViewModel<bool>()
@@ -36,27 +37,6 @@ namespace vue.IService.Implement
             };
         }
 
-
-
-        /// <summary>
-        /// 根据签到时间格式化数据
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="time"></param>
-        /// <returns></returns>
-        public static int FormatType(DateTime time)
-        {
-
-            if (time.Hour >= 9)
-            {
-                return 2;
-            }
-            else if (time.Hour < 9)
-            {
-                return 1;
-            }
-            return 7;
-        }
 
 
 

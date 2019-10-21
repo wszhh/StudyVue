@@ -14,7 +14,7 @@ namespace vue.DBModel
         public DateTime ClockTime { get; set; }
         public DateTime? ClockOutTime { get; set; }
         public int? Workinghours { get; set; }
-        public string Remake { get; set; }
+        public string Remark { get; set; }
         public int? Late { get; set; }
         public int? Absenteeism { get; set; }
     }

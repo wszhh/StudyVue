@@ -27,11 +27,32 @@ namespace vue.Controllers
             _attendance = attendance;
         }
 
+        /// <summary>
+        /// 获取类别用于显示
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public ReturnViewModel<IEnumerable<CategoryItems>> GetCategory()
         {
             return _attendance.GetAttendanceCategory();
         }
+
+
+        /// <summary>
+        /// 获取所有考勤信息
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ReturnViewModel<IEnumerable<AttendanceSheet>> GetAttendances()
+        {
+            return new ReturnViewModel<IEnumerable<AttendanceSheet>>
+            {
+                code = (int)codes.Success,
+                data = db.AttendanceSheet
+            };
+        }
+
+
 
 
         /// <summary>
@@ -64,7 +85,7 @@ namespace vue.Controllers
 
 
         /// <summary>
-        /// 获取本月考勤信息
+        /// 获取本月考勤信息用于日历显示
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -74,7 +95,7 @@ namespace vue.Controllers
             if (!string.IsNullOrEmpty(id))
             {
                 DateTime beginTime = DateTime.Parse(DateTime.Now.ToString().Substring(0, 7) + "-01");//本月初
-                //DateTime endTime = DateTime.Parse(beginTime.AddMonths(1).AddDays(-1).ToShortDateString());//本月最后一天
+                                                                                                     //DateTime endTime = DateTime.Parse(beginTime.AddMonths(1).AddDays(-1).ToShortDateString());//本月最后一天
                 DateTime endTime = DateTime.Parse(DateTime.Now.ToShortDateString());//本月最后一天
                 List<SigninModel> dateList = new List<SigninModel>();
                 for (DateTime dt = beginTime; dt <= endTime; dt = dt.AddDays(1))
@@ -85,13 +106,12 @@ namespace vue.Controllers
                   && x.ClockTime.Date >= beginTime).Select(x => new SigninModel()
                   {
                       Date = x.ClockTime,
-                      SignInType = FormatType(x.ClockTime)
+                      SignInType = SigninModel.FormatType(x.ClockTime)
                   });
                 return new ReturnViewModel<IEnumerable<SigninModel>>()
                 {
                     code = (int)codes.Success,
                     data = dateList.Union(result)
-
                 };
             }
             return new ReturnViewModel<IEnumerable<SigninModel>>()
@@ -103,38 +123,14 @@ namespace vue.Controllers
 
 
 
-        /// <summary>
-        /// 根据签到时间格式化数据
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="time"></param>
-        /// <returns></returns>
-        public static int FormatType(DateTime time)
-        {
-
-            if (time.Hour >= 9)
-            {
-                return 2;
-            }
-            else if (time.Hour < 9)
-            {
-                return 1;
-            }
-            return 7;
-        }
 
 
 
 
-        public class SigninModel
-        {
-            public DateTime Date { get; set; }
-            public int SignInType { get; set; }
-        }
 
 
         /// <summary>
-        /// 获取Token
+        /// 返回Token
         /// </summary>
         /// <returns></returns>
         public string GetIdByToken()
@@ -150,7 +146,7 @@ namespace vue.Controllers
         public IEnumerable<SigninModel> CalTime()
         {
             DateTime beginTime = DateTime.Parse(DateTime.Now.ToString().Substring(0, 7) + "-01");//本月初
-            //DateTime endTime = DateTime.Parse(beginTime.AddMonths(1).AddDays(-1).ToShortDateString());//本月最后一天
+                                                                                                 //DateTime endTime = DateTime.Parse(beginTime.AddMonths(1).AddDays(-1).ToShortDateString());//本月最后一天
             DateTime endTime = DateTime.Parse(DateTime.Now.ToShortDateString());//今天
             List<SigninModel> dateList = new List<SigninModel>();
             for (DateTime dt = beginTime; dt <= endTime; dt = dt.AddDays(1))

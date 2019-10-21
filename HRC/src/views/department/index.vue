@@ -131,7 +131,7 @@ export default {
       dialogVisible: false,
       list: null,
       listLoading: true,
-      total: 0,
+      total: 0, 
       listQuery: {
         page: 1,
         limit: 10
@@ -180,6 +180,7 @@ export default {
         }
       });
     },
+    //多选框
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },

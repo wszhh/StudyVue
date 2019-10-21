@@ -33,3 +33,26 @@ export function Checkin(data) {
         data
     })
 }
+
+
+//check attendance
+export function GetAttendances(data) {
+    return request({
+        url: '/Attendance/GetAttendances',
+        method: 'post',
+        data
+    })
+}
+
+export function FormatAttendanceType(data) {
+    switch (data) {
+        case "正常":
+            return "success";
+        case "未签到":
+            return "danger";
+        case "迟到":
+            return "warning";
+        case "请假":
+            return "info";
+    }
+}

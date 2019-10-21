@@ -53,7 +53,8 @@ import {
   GetSignInInfo,
   GetCategory,
   IsChecked,
-  Checkin
+  Checkin,
+  FormatAttendanceType
 } from "@/api/Attendance";
 export default {
   data() {
@@ -79,16 +80,7 @@ export default {
       this.GetSignInInfo();
     },
     TagType(value) {
-      switch (value) {
-        case "正常":
-          return "success";
-        case "未签到":
-          return "danger";
-        case "迟到":
-          return "warning";
-        case "请假":
-          return "info";
-      }
+      return FormatAttendanceType(value);
     },
     async GetSignInInfo() {
       const { data } = await GetSignInInfo();
