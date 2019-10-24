@@ -18,13 +18,15 @@ namespace vue.Controllers
     public class AttendanceController : ControllerBase
     {
         private readonly IAttendance _attendance;
+        private readonly ICategoryItems _categoryItems;
         private readonly UserManager<NewUser> _userManager;
         private HRCContext db = new HRCContext();
 
-        public AttendanceController(UserManager<NewUser> userManager, IAttendance attendance)
+        public AttendanceController(UserManager<NewUser> userManager, IAttendance attendance, ICategoryItems categoryItems)
         {
             _userManager = userManager;
             _attendance = attendance;
+            _categoryItems = categoryItems;
         }
 
         /// <summary>
@@ -34,7 +36,7 @@ namespace vue.Controllers
         [HttpPost]
         public ReturnViewModel<IEnumerable<CategoryItems>> GetCategory()
         {
-            return _attendance.GetAttendanceCategory();
+            return _categoryItems.GetCategoryByName("Attendance");
         }
 
 
@@ -51,9 +53,6 @@ namespace vue.Controllers
                 data = db.AttendanceSheet
             };
         }
-
-
-
 
         /// <summary>
         /// 是否已经签到过
@@ -121,24 +120,6 @@ namespace vue.Controllers
             };
         }
 
-
-
-
-
-
-
-
-
-        /// <summary>
-        /// 返回Token
-        /// </summary>
-        /// <returns></returns>
-        public string GetIdByToken()
-        {
-            return JwtHelper.SerializeJwt(Request.Headers["Authorization"].ToString().Substring(7)).ID;
-        }
-
-
         /// <summary>
         /// 生成本月日期集合
         /// </summary>
@@ -155,5 +136,11 @@ namespace vue.Controllers
             }
             return dateList;
         }
+
+        /// <summary>
+        /// 返回Token
+        /// </summary>
+        /// <returns></returns>
+        public string GetIdByToken() => JwtHelper.SerializeJwt(Request.Headers["Authorization"].ToString().Substring(7)).ID;
     }
 }

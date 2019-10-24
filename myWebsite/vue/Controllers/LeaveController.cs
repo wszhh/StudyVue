@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using vue.Auth;
 using vue.DBModel;
 using vue.IService;
 using vue.ViewModel;
@@ -9,57 +8,72 @@ using codes = ViewModel.StateCodes.StateCode;
 
 namespace vue.Controllers
 {
-    /// <summary>
-    /// 请假表
-    /// </summary>
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class LeaveController : Controller
     {
+        private readonly ICategoryItems _categoryItems;
         private readonly ILeave _leave;
-        public LeaveController(ILeave leave)
+        public LeaveController(ILeave leave, ICategoryItems categoryItems)
         {
-            this._leave = leave;
+            _leave = leave;
+            _categoryItems = categoryItems;
         }
 
-        [HttpGet]
-        [Authorize(Policy = "CEO")]
-        public ReturnViewModel<List<Leave>> GetLeaves()
-        {
-            return new ReturnViewModel<List<Leave>>()
-            {
-                code = (int)codes.Success,
-                data = _leave.GetLeave(),
-            };
-        }
-
+        /// <summary>
+        /// 基于用户id获取请假表
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
-        public ReturnViewModel<List<signinModel>> GetSignInInfo()
+        public ReturnViewModel<IEnumerable<Leave>> GetLeavesById() => _leave.GetLeaveByUserId(GetIdByToken());
+
+        /// <summary>
+        /// 申请请假
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ReturnViewModel<IEnumerable<Leave>> AddLeave(Leave leave)
         {
-            List<signinModel> data = new List<signinModel>()
-            {
-                new signinModel{ Date=DateTime.Now.AddDays(-7) , SignInType=1},
-                new signinModel{ Date=DateTime.Now.AddDays(-6) , SignInType=1},
-                new signinModel{ Date=DateTime.Now.AddDays(-5) , SignInType=1},
-                new signinModel{ Date=DateTime.Now.AddDays(-4), SignInType=1},
-                new signinModel{ Date=DateTime.Now.AddDays(-3) , SignInType=1},
-                new signinModel{ Date=DateTime.Now.AddDays(-2) , SignInType=2},
-                new signinModel{ Date=DateTime.Now.AddDays(-1) , SignInType=1},
-                new signinModel{ Date=DateTime.Now , SignInType=4},
-            };
-            return new ReturnViewModel<List<signinModel>>()
-            {
-                code = (int)codes.Success,
-                data = data
-            };
+            return null;
         }
 
-        public class signinModel
+        /// <summary>
+        /// 获取审批表
+        /// 2019年10月24日 10时05分23秒
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ReturnViewModel<IEnumerable<Leave>> GetCheckLeaves() => _leave.GetCheckLeaves();
+
+        /// <summary>
+        /// 审批请假
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ReturnViewModel<IEnumerable<Leave>> CheckLeave(Leave leave)
         {
-            public DateTime Date { get; set; }
-            public int SignInType { get; set; }
+            return null;
         }
 
+        /// <summary>
+        /// 获取请假表
+        /// 2019年10月24日 10时05分44秒
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ReturnViewModel<IEnumerable<Leave>> GetLeaves() => _leave.GetLeaves();
 
+        /// <summary>
+        /// 获取LeaveStart的Category
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ReturnViewModel<IEnumerable<CategoryItems>> GetCategory() => _categoryItems.GetCategoryByName("LeaveStart");
+
+        /// <summary>
+        /// 返回Token
+        /// </summary>
+        /// <returns></returns>
+        public string GetIdByToken() => JwtHelper.SerializeJwt(Request.Headers["Authorization"].ToString().Substring(7)).ID;
     }
 }

@@ -2,12 +2,13 @@
   <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo">
-        <h1 v-else class="sidebar-title">{{ title }} </h1>
+        <img v-if="logo" src="@/assets/logo/logo.png" class="sidebar-logo" />
+
+        <h1 v-else class="sidebar-title">{{ title }}</h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo">
-        <h1 class="sidebar-title">{{ title }} </h1>
+        <img v-if="logo" src="@/assets/logo/logo.png" class="sidebar-logo" />
+        <h1 class="sidebar-title">{{ title }}</h1>
       </router-link>
     </transition>
   </div>
@@ -15,7 +16,7 @@
 
 <script>
 export default {
-  name: 'SidebarLogo',
+  name: "SidebarLogo",
   props: {
     collapse: {
       type: Boolean,
@@ -24,11 +25,11 @@ export default {
   },
   data() {
     return {
-      title: '人 事 管 理 系 统',
-      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
-    }
+      title: "人事管理系统",
+      logo: "1"
+    };
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -55,10 +56,10 @@ export default {
     width: 100%;
 
     & .sidebar-logo {
-      width: 32px;
-      height: 32px;
+      width: 40px;
+      height: 40px;
       vertical-align: middle;
-      margin-right: 12px;
+      margin-right: 10px;
     }
 
     & .sidebar-title {

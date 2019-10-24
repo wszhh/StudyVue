@@ -6,7 +6,7 @@ namespace vue.DBModel
     public partial class AttendanceSheet
     {
         public int AttendanceId { get; set; }
-        public DateTime? AttendanceStartTime { get; set; }
+        public DateTime AttendanceStartTime { get; set; }
         public int? AttendanceType { get; set; }
         public string UserId { get; set; }
         public int DepartmentId { get; set; }

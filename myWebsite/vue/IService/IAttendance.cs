@@ -8,12 +8,6 @@ namespace vue.IService
     public interface IAttendance
     {
 
-        /// <summary>
-        /// 获取签到的CategoryItem
-        /// </summary>
-        /// <returns></returns>
-        ReturnViewModel<IEnumerable<CategoryItems>> GetAttendanceCategory();
-
 
         /// <summary>
         /// 是否已经签到过

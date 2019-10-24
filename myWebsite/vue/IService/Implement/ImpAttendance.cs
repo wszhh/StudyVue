@@ -40,19 +40,6 @@ namespace vue.IService.Implement
 
 
 
-
-        /// <summary>
-        /// 获取签到的CategoryItem
-        /// </summary>
-        /// <returns></returns>
-        public ReturnViewModel<IEnumerable<CategoryItems>> GetAttendanceCategory() => new ReturnViewModel<IEnumerable<CategoryItems>>()
-        {
-            code = (int)codes.Success,
-            data = db.CategoryItems.Where(x => x.CCategory == "Attendance"),
-        };
-
-
-
         /// <summary>
         /// 是否已经签到过
         /// </summary>

@@ -278,6 +278,7 @@ namespace vue.DBModel
                     .IsUnicode(false);
 
                 entity.Property(e => e.LeaveReason)
+                    .IsRequired()
                     .HasMaxLength(250)
                     .IsUnicode(false);
 
@@ -285,7 +286,11 @@ namespace vue.DBModel
 
                 entity.Property(e => e.LeaveTime).HasColumnType("datetime");
 
-                entity.Property(e => e.UserId).HasColumnName("UserID");
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasColumnName("UserID")
+                    .HasMaxLength(500)
+                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Notice>(entity =>

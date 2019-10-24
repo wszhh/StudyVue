@@ -44,15 +44,16 @@ export function GetAttendances(data) {
     })
 }
 
+
 export function FormatAttendanceType(data) {
     switch (data) {
-        case "正常":
-            return "success";
-        case "未签到":
-            return "danger";
-        case "迟到":
-            return "warning";
-        case "请假":
-            return "info";
+      case "正常":
+        return "success";
+      case "未签到":
+        return "danger";
+      case "迟到":
+        return "warning";
+      case "请假":
+        return "info";
     }
 }

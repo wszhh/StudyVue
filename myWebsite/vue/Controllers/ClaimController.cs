@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using vue.Areas.Identity.Data;
+using vue.Auth;
 using vue.IService;
 using vue.ViewModel;
 using codes = ViewModel.StateCodes.StateCode;
@@ -234,6 +235,9 @@ namespace vue.Controllers
                 message = "修改成功"
             };
         }
+
+
+        public string GetIdByToken() => JwtHelper.SerializeJwt(Request.Headers["Authorization"].ToString().Substring(7)).ID;
     }
 }
 

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using ViewModel;
 using System.Security.Claims;
 using System.Linq;
+using Microsoft.AspNetCore.Cors;
 
 namespace vue.Controllers
 {

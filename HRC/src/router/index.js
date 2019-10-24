@@ -103,7 +103,6 @@ export const asyncRoutes = [
       }
     ]
   },
-
   {
     path: '/Claim',
     component: Layout,
@@ -114,7 +113,6 @@ export const asyncRoutes = [
       meta: { roles: ["Claim_Get"], title: '权限管理', icon: 'key-fill', noCache: true }
     }]
   },
-
   {
     path: '/nested',
     component: Layout,
@@ -173,16 +171,6 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: '请假管理', icon: 'link' }
-      }
-    ]
-  },
-  {
     path: '/Attendance',
     component: Layout,
     redirect: '/attendance/signin',
@@ -207,6 +195,42 @@ export const asyncRoutes = [
       }
     ]
   },
+
+  {
+    path: '/Leave',
+    component: Layout,
+    redirect: '/Leave/applyleave',
+    name: 'Leave',
+    alwaysShow: "true",
+    meta: {
+      title: '请假管理',
+      icon: 'wind-smile-fill', noCache: true
+    },
+    children: [
+      {
+        path: 'applyleave',
+        name: 'applyleave',
+        component: () => import('@/views/Leave/applyleave/index'),
+        meta: { title: '申请请假', icon: 'exchange-fill', noCache: true }
+      },
+      {
+        path: 'checkleave',
+        name: 'checkleave',
+        component: () => import('@/views/Leave/checkleave/index'),
+        meta: { title: '请假审核', icon: 'laptop-check-fill', noCache: true }
+      },
+      {
+        path: 'allleave',
+        name: 'allleave',
+        component: () => import('@/views/Leave/allleave/index'),
+        meta: { title: '请假记录', icon: 'database-fill', noCache: true }
+      }
+    ]
+  },
+
+
+
+
   {
     path: '/department',
     component: Layout,
