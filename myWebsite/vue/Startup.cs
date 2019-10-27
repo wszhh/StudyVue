@@ -114,7 +114,7 @@ namespace vue
                     // 支持多个域名端口，注意端口号后不要带/斜杆：比如localhost:8000/，是错的
                     // 注意，http://127.0.0.1:1818 和 http://localhost:1818 是不一样的，尽量写两个
                     policy
-                    .WithOrigins( "http://192.168.1.238:8080", "http://radiosilence.cn:8080", "http://120.78.170.40:8080", "http://localhost:9528")
+                    .WithOrigins("http://192.168.1.238:8080", "http://radiosilence.cn", "http://120.78.170.40:8080", "http://localhost:9528", "http://192.168.1.6:9528")
                     .AllowAnyHeader()//Ensures that the policy allows any header.
                     .AllowAnyMethod();
                     //.WithExposedHeaders("Token-Expired");
@@ -208,12 +208,9 @@ namespace vue
             {
                 app.UseHsts();
             }
-            app.UseHttpsRedirection();
-            app.UseAuthentication();
-            app.UseStaticFiles();
             #region CORS
             //跨域第二种方法，使用策略，详细策略信息在ConfigureService中
-            app.UseCors("AllRequests");//将 CORS 中间件添加到 web 应用程序管线中, 以允许跨域请求。
+            app.UseCors("LimitRequests");//将 CORS 中间件添加到 web 应用程序管线中, 以允许跨域请求。
 
 
             #region 跨域第一种版本
@@ -223,6 +220,9 @@ namespace vue
             #endregion
 
             #endregion
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
+            app.UseStaticFiles();
             app.UseMvc();
         }
     }

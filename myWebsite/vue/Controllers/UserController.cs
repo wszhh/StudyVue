@@ -22,6 +22,7 @@ namespace vue.Controllers
 
     [Route("api/[controller]/[action]")]
     [ApiController]
+    //[EnableCors("AllRequests")]
     public class UserController : ControllerBase
     {
         private const string DefaultUserPhoto = "\\wwwroot\\Photo\\default.jpg";
