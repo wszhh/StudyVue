@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace vue.Controllers
@@ -38,8 +39,9 @@ namespace vue.Controllers
         /// </summary>
         /// <param name="value"></param>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public string Post([FromForm]IFormFile smfile)
         {
+            return smfile.ToString();
         }
 
         // PUT api/values/5

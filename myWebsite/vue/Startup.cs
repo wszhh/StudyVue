@@ -114,7 +114,7 @@ namespace vue
                     // 支持多个域名端口，注意端口号后不要带/斜杆：比如localhost:8000/，是错的
                     // 注意，http://127.0.0.1:1818 和 http://localhost:1818 是不一样的，尽量写两个
                     policy
-                    .WithOrigins("http://192.168.1.238:8080", "http://radiosilence.cn", "http://120.78.170.40:8080", "http://localhost:9528", "http://192.168.1.6:9528")
+                    .WithOrigins("http://192.168.1.238:8080", "http://radiosilence.cn", "http://hrc.radiosilence.cn", "http://120.78.170.40:8080", "http://localhost:9528")
                     .AllowAnyHeader()//Ensures that the policy allows any header.
                     .AllowAnyMethod();
                     //.WithExposedHeaders("Token-Expired");
