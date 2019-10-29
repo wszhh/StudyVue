@@ -58,15 +58,17 @@ namespace vue.IService.Implement
         /// <param name="pagination"></param>
         /// <returns></returns>
         public ReturnViewModel<PaginationResponeViewModel<IEnumerable<Department>>> GetDepartmentList(PaginationRequestViewModel pagination)
-         => new ReturnViewModel<PaginationResponeViewModel<IEnumerable<Department>>>()
-         {
-             data = new PaginationResponeViewModel<IEnumerable<Department>>()
-             {
-                 list = db.Department.Skip(pagination.page).Take(pagination.limit),
-                 total = db.Department.Count(),
-             },
-             code = (int)codes.Success,
-         };
+        {
+            return new ReturnViewModel<PaginationResponeViewModel<IEnumerable<Department>>>()
+            {
+                data = new PaginationResponeViewModel<IEnumerable<Department>>()
+                {
+                    list = db.Department.Skip(pagination.page).Take(pagination.limit),
+                    total = db.Department.Count(),
+                },
+                code = (int)codes.Success,
+            };
+        }
 
         /// <summary>
         /// 删一个

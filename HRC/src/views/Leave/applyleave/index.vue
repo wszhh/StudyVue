@@ -6,39 +6,28 @@
         <!-- 申请请假的dialog -->
         <el-dialog title="申请请假" :visible.sync="ApplyFormVisible">
           <el-form :model="ApplyForm" ref="ApplyForm">
-            <el-row>
-              <el-col :span="12">
-                <el-form-item
-                  label="开始时间"
-                  prop="LeaveStartTime"
-                  :rules="[{required:true,message:'不得留空'}]"
-                >
-                  <el-date-picker
-                    v-model="ApplyForm.LeaveStartTime"
-                    type="date"
-                    placeholder="开始时间"
-                    style="width: 80%;"
-                    format="yyyy 年 M 月 d 日"
-                  />
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item
-                  label="结束时间"
-                  prop="LeaveEndTime"
-                  :rules="[{required:true,message:'不得留空'}]"
-                >
-                  <el-date-picker
-                    v-model="ApplyForm.LeaveEndTime"
-                    type="date"
-                    placeholder="结束时间"
-                    style="width: 80%;"
-                    format="yyyy 年 M 月 d 日"
-                  />
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-form-item label="时间段" prop="LeaveHalfDay">
+            <el-form-item
+              label="时间范围"
+              prop="LeaveTimeSpan"
+              :rules="[{required:true,message:'不得留空'}]"
+            >
+              <el-date-picker
+                v-model="ApplyForm.LeaveTimeSpan"
+                type="daterange"
+                align="right"
+                unlink-panels
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                format="yyyy 年 M 月 d 日"
+                value-format="yyyy-MM-dd"
+              ></el-date-picker>
+            </el-form-item>
+            <el-form-item
+              label=" 时间段"
+              prop="LeaveHalfDay"
+              :rules="[{required:true,message:'不得留空'}]"
+            >
               <el-select v-model="ApplyForm.LeaveHalfDay">
                 <el-option label="全天" value="全天"></el-option>
                 <el-option label="上午" value="上午"></el-option>
@@ -74,6 +63,11 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="demo-table-expand">
+              <el-form-item label="申请人编号" align="center">
+                <span>{{ props.row.userId }}</span>
+              </el-form-item>
+              <br />
+
               <el-form-item label="请假号" align="center">
                 <span>{{ props.row.leaveId }}</span>
               </el-form-item>
@@ -85,7 +79,7 @@
               <br />
 
               <el-form-item label="审批人编号" align="center">
-                <span>{{ props.row.approverID }}</span>
+                <span>{{ props.row.approverId }}</span>
               </el-form-item>
               <br />
 
@@ -96,7 +90,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="编号" width="95" align="center" prop="userId"></el-table-column>
+        <el-table-column label="姓名" width="100" align="center" prop="realName"></el-table-column>
 
         <el-table-column label="审批状态" width="90" align="center">
           <template slot-scope="{row}">
@@ -104,7 +98,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="请假时间" align="center" width="190">
+        <el-table-column label="申请时间" align="center" width="190">
           <el-date-picker
             v-model="scope.row.leaveTime"
             size="small"
@@ -117,7 +111,7 @@
           />
         </el-table-column>
 
-        <el-table-column label="请假起始时间" align="center" width="190">
+        <el-table-column label="起始时间" align="center" width="190">
           <el-date-picker
             v-model="scope.row.leaveStartTime"
             size="small"
@@ -177,7 +171,7 @@
 
 <script>
 import {
-  GetLeaves,
+  GetLeavesById,
   GetLeaveStartCategory,
   FormatLeaveType,
   AddLeave
@@ -209,8 +203,7 @@ export default {
       categoryList: null,
       ApplyFormVisible: false,
       ApplyForm: {
-        LeaveStartTime: null,
-        LeaveEndTime: null,
+        LeaveTimeSpan: null,
         LeaveHalfDay: "全天",
         LeaveReason: null,
         LeaveTime: new Date()
@@ -224,8 +217,13 @@ export default {
   methods: {
     fetchData() {
       this.listLoading = true;
-      GetLeaves().then(response => {
-        this.list = response.data;
+      const { limit, page } = this.listQuery;
+      GetLeavesById({
+        limit: limit,
+        page: limit * (page - 1)
+      }).then(response => {
+        this.list = response.data.list;
+        this.total = response.data.total;
         this.listLoading = false;
       });
     },
@@ -250,7 +248,12 @@ export default {
     ApplyFormSubmit() {
       this.$refs.ApplyForm.validate(validate => {
         if (validate) {
-          AddLeave(this.ApplyForm);
+          AddLeave(this.ApplyForm).then(x => {
+            if (x.data) {
+              this.ApplyFormVisible = false;
+              this.fetchData();
+            }
+          });
         } else {
           return false;
         }

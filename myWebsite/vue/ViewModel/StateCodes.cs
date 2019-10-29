@@ -85,6 +85,10 @@
             /// </summary>
             AttendanceError = 10018,
 
+            /// <summary>
+            /// 请假申请失败
+            /// </summary>
+            ApplyLeaveError = 10019,
         }
     }
 }

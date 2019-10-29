@@ -14,8 +14,9 @@ namespace vue.DBModel
         public string LeaveHalfDay { get; set; }
         public int? LeaveDays { get; set; }
         public string LeaveReason { get; set; }
-        public int ApproverId { get; set; }
-        public DateTime ApprovalTime { get; set; }
+        public string ApproverId { get; set; }
+        public DateTime? ApprovalTime { get; set; }
         public string ApproverReason { get; set; }
+        public string RealName { get; set; }
     }
 }

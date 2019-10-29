@@ -1,8 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ViewModel;
+using vue.Areas.Identity.Data;
 using vue.Auth;
 using vue.DBModel;
 using vue.IService;
+using vue.Migrations;
 using vue.ViewModel;
 using codes = ViewModel.StateCodes.StateCode;
 
@@ -12,29 +17,35 @@ namespace vue.Controllers
     [ApiController]
     public class LeaveController : Controller
     {
+        private readonly UserManager<NewUser> _userManager;
         private readonly ICategoryItems _categoryItems;
         private readonly ILeave _leave;
-        public LeaveController(ILeave leave, ICategoryItems categoryItems)
+        public LeaveController(UserManager<NewUser> userManager, ILeave leave, ICategoryItems categoryItems)
         {
+            _userManager = userManager;
             _leave = leave;
             _categoryItems = categoryItems;
         }
-
-        /// <summary>
-        /// 基于用户id获取请假表
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public ReturnViewModel<IEnumerable<Leave>> GetLeavesById() => _leave.GetLeaveByUserId(GetIdByToken());
 
         /// <summary>
         /// 申请请假
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public ReturnViewModel<IEnumerable<Leave>> AddLeave(Leave leave)
+        public async Task<ReturnViewModel<bool>> AddLeave([FromBody]LeaveViewModel leave)
         {
-            return null;
+            return _leave.AddLeave(leave, await _userManager.FindByIdAsync(GetIdByToken()));
+        }
+
+
+        /// <summary>
+        /// 审批请假
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ReturnViewModel<bool>> CheckLeave([FromBody]Leave leave)
+        {
+            return _leave.CheckLeave(leave, await _userManager.FindByIdAsync(GetIdByToken()));
         }
 
         /// <summary>
@@ -43,16 +54,9 @@ namespace vue.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public ReturnViewModel<IEnumerable<Leave>> GetCheckLeaves() => _leave.GetCheckLeaves();
-
-        /// <summary>
-        /// 审批请假
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public ReturnViewModel<IEnumerable<Leave>> CheckLeave(Leave leave)
+        public ReturnViewModel<PaginationResponeViewModel<IEnumerable<Leave>>> GetCheckLeaves(PaginationRequestViewModel pagination)
         {
-            return null;
+            return _leave.GetCheckLeaves(pagination);
         }
 
         /// <summary>
@@ -61,7 +65,20 @@ namespace vue.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public ReturnViewModel<IEnumerable<Leave>> GetLeaves() => _leave.GetLeaves();
+        public ReturnViewModel<PaginationResponeViewModel<IEnumerable<Leave>>> GetLeaves([FromBody]PaginationRequestViewModel pagination)
+        {
+            return _leave.GetLeaves(pagination);
+        }
+
+        /// <summary>
+        /// 基于用户id获取请假表
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ReturnViewModel<PaginationResponeViewModel<IEnumerable<Leave>>> GetLeavesById([FromBody]PaginationRequestViewModel pagination)
+        {
+            return _leave.GetLeavesById(pagination, GetIdByToken());
+        }
 
         /// <summary>
         /// 获取LeaveStart的Category

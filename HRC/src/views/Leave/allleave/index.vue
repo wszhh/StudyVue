@@ -1,7 +1,7 @@
 <template>
   <div class="zdy-border">
     <div id="head" class="table-head">
-      <el-button type="primary" @click="ApplyFormVisible=true">XXXXX</el-button>
+      <el-button type="primary" @click="ApplyFormVisible=false">XXXXX</el-button>
       <div id="dialog">
         <!-- 申请请假的dialog -->
         <el-dialog title="申请请假" :visible.sync="ApplyFormVisible">
@@ -74,6 +74,11 @@
         <el-table-column type="expand">
           <template slot-scope="props">
             <el-form label-position="left" inline class="demo-table-expand">
+              <el-form-item label="申请人编号" align="center">
+                <span>{{ props.row.userId }}</span>
+              </el-form-item>
+              <br />
+
               <el-form-item label="请假号" align="center">
                 <span>{{ props.row.leaveId }}</span>
               </el-form-item>
@@ -85,7 +90,7 @@
               <br />
 
               <el-form-item label="审批人编号" align="center">
-                <span>{{ props.row.approverID }}</span>
+                <span>{{ props.row.approverId }}</span>
               </el-form-item>
               <br />
 
@@ -96,7 +101,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="编号" width="95" align="center" prop="userId"></el-table-column>
+       <el-table-column label="姓名" width="100" align="center" prop="realName"></el-table-column>
 
         <el-table-column label="审批状态" width="90" align="center">
           <template slot-scope="{row}">
@@ -104,7 +109,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="请假时间" align="center" width="190">
+        <el-table-column label="申请时间" align="center" width="190">
           <el-date-picker
             v-model="scope.row.leaveTime"
             size="small"
@@ -117,7 +122,7 @@
           />
         </el-table-column>
 
-        <el-table-column label="请假起始时间" align="center" width="190">
+        <el-table-column label="起始时间" align="center" width="190">
           <el-date-picker
             v-model="scope.row.leaveStartTime"
             size="small"
@@ -177,7 +182,7 @@
 
 <script>
 import {
-  GetAllLeaves,
+  GetLeaves,
   GetLeaveStartCategory,
   FormatLeaveType,
   AddLeave
@@ -224,8 +229,13 @@ export default {
   methods: {
     fetchData() {
       this.listLoading = true;
-      GetAllLeaves().then(response => {
-        this.list = response.data;
+      const { limit, page } = this.listQuery;
+      GetLeaves({
+        limit: limit,
+        page: limit * (page - 1)
+      }).then(response => {
+        this.list = response.data.list;
+        this.total = response.data.total;
         this.listLoading = false;
       });
     },

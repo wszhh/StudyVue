@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export function GetLeaves(data) {
+export function GetLeavesById(data) {
   return request({
     url: '/Leave/GetLeavesById',
     method: 'post',
@@ -41,7 +41,7 @@ export function CheckLeave(data) {
   })
 }
 
-export function GetAllLeaves(data) {
+export function GetLeaves(data) {
   return request({
     url: '/Leave/GetLeaves',
     method: 'post',

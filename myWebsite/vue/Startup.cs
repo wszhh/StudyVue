@@ -116,7 +116,7 @@ namespace vue
                     policy
                     .WithOrigins("http://192.168.1.238:8080", "http://radiosilence.cn", "http://hrc.radiosilence.cn", "http://120.78.170.40:8080", "http://localhost:9528")
                     .AllowAnyHeader()//Ensures that the policy allows any header.
-                    .AllowAnyMethod();
+                    .AllowAnyMethod().AllowCredentials();
                     //.WithExposedHeaders("Token-Expired");
                 });
             });

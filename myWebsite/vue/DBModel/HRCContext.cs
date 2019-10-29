@@ -265,7 +265,10 @@ namespace vue.DBModel
 
                 entity.Property(e => e.ApprovalTime).HasColumnType("datetime");
 
-                entity.Property(e => e.ApproverId).HasColumnName("ApproverID");
+                entity.Property(e => e.ApproverId)
+                    .HasColumnName("ApproverID")
+                    .HasMaxLength(250)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.ApproverReason)
                     .HasMaxLength(250)
@@ -285,6 +288,11 @@ namespace vue.DBModel
                 entity.Property(e => e.LeaveStartTime).HasColumnType("datetime");
 
                 entity.Property(e => e.LeaveTime).HasColumnType("datetime");
+
+                entity.Property(e => e.RealName)
+                    .IsRequired()
+                    .HasMaxLength(255)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.UserId)
                     .IsRequired()
