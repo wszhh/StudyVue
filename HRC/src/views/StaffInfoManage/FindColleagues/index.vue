@@ -7,20 +7,21 @@
         v-model="FindByname"
         class="input-with-select"
         clearable
-        v-permission="['Colleague_Find']"
+        :readonly="!checkPermission(['admin','editor'])"
         style="width:220"
       >
         <!-- <el-select v-model="select" slot="prepend" placeholder="请选择">
           <el-option label="餐厅名" value="1"></el-option>
           <el-option label="订单号" value="2"></el-option>
           <el-option label="用户电话" value="3"></el-option>
+          v-permission="['Colleague_Find']"
         </el-select>-->
         <el-button
-          v-permission="['Colleague_Find']"
           slot="append"
           icon="el-icon-search"
           @click="FindColleagueByName(FindByname)"
           @keyup.enter="FindColleagueByName(FindByname)"
+          :disabled="!checkPermission(['admin','editor'])"
         ></el-button>
       </el-input>
     </div>
@@ -95,10 +96,9 @@
 </template>
 
 <script>
+import checkPermission from "@/utils/permission"; // 权限判断函数
 import Pagination from "@/components/Pagination";
 import { getColleaguesList, FindColleagueByName } from "@/api/StaffInfoManage";
-import permission from "@/directive/permission/index.js"; // 权限判断指令
-
 export default {
   directives: { permission },
   components: { Pagination },
@@ -128,6 +128,7 @@ export default {
     this.getList();
   },
   methods: {
+    checkPermission,
     async getList() {
       this.listLoading = true;
       const { limit, page } = this.listQuery;

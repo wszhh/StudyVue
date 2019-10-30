@@ -58,9 +58,12 @@ namespace vue.Controllers
                 new TreeViewModel{Id=401,Type="Colleague",Label="查找同事"},
                 new TreeViewModel{Id=501,Type="Claim",Label="权限管理"},
                 new TreeViewModel{Id=601,Type="Salary",Label="薪资管理"},
-                new TreeViewModel{Id=701,Type="Leave",Label="请假管理"},
-                new TreeViewModel{Id=801,Type="kaoqing",Label="考勤管理"},
-                new TreeViewModel{Id=901,Type="Department",Label="部门管理"}
+                new TreeViewModel{Id=701,Type="ApplyLeave",Label="申请请假"},
+                new TreeViewModel{Id=801,Type="CheckLeave",Label="审核请假"},
+                new TreeViewModel{Id=901,Type="AllLeave",Label="请假记录"},
+                new TreeViewModel{Id=1001,Type="Signin",Label="签到"},
+                new TreeViewModel{Id=1101,Type="CheckAttendance",Label="查看考勤记录"},
+                new TreeViewModel{Id=1201,Type="Department",Label="部门管理"}
             }.Select(x => new TreeViewModel()
             {
                 Id = x.Id,

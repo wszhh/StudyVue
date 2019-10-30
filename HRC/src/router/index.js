@@ -177,6 +177,7 @@ export const asyncRoutes = [
     name: 'attendance',
     alwaysShow: "true",
     meta: {
+      roles: ["Signin_Get", "CheckAttendance_Get"],
       title: '考勤管理',
       icon: 'nail-fixed-fill', noCache: true
     },
@@ -185,13 +186,13 @@ export const asyncRoutes = [
         path: 'signin',
         name: 'signin',
         component: () => import('@/views/Attendance/Signin/index'),
-        meta: { title: '签到', icon: 'star-circle-fill', noCache: true }
+        meta: { roles: ["Signin_Get"], title: '签到', icon: 'star-circle-fill', noCache: true }
       },
       {
         path: 'CheckAttendance',
         name: 'CheckAttendance',
         component: () => import('@/views/Attendance/CheckAttendance/index'),
-        meta: { title: '查看考勤记录', icon: 'calendar alt-fill', noCache: true }
+        meta: { roles: ["CheckAttendance_Get"], title: '查看考勤记录', icon: 'calendar alt-fill', noCache: true }
       }
     ]
   },
@@ -201,8 +202,9 @@ export const asyncRoutes = [
     component: Layout,
     redirect: '/Leave/applyleave',
     name: 'Leave',
-    alwaysShow: "true",
+    alwaysShow: true,
     meta: {
+      roles: ["ApplyLeave_Get", "CheckLeave_Get", "AllLeave_Get"],
       title: '请假管理',
       icon: 'wind-smile-fill', noCache: true
     },
@@ -211,19 +213,19 @@ export const asyncRoutes = [
         path: 'applyleave',
         name: 'applyleave',
         component: () => import('@/views/Leave/applyleave/index'),
-        meta: { title: '申请请假', icon: 'exchange-fill', noCache: true }
+        meta: { roles: ["ApplyLeave_Get"], title: '申请请假', icon: 'exchange-fill', noCache: true }
       },
       {
         path: 'checkleave',
         name: 'checkleave',
         component: () => import('@/views/Leave/checkleave/index'),
-        meta: { title: '请假审核', icon: 'laptop-check-fill', noCache: true }
+        meta: { roles: ["CheckLeave_Get"], title: '请假审核', icon: 'laptop-check-fill', noCache: true }
       },
       {
         path: 'allleave',
         name: 'allleave',
         component: () => import('@/views/Leave/allleave/index'),
-        meta: { title: '请假记录', icon: 'database-fill', noCache: true }
+        meta: { roles: ["AllLeave_Get"], title: '请假记录', icon: 'database-fill', noCache: true }
       }
     ]
   },

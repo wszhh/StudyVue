@@ -22,7 +22,7 @@
           type="primary"
           style="height:10vh;width:100%"
           @click="Checkin"
-          :disabled="!BtnChecked"
+          :disabled="!checkPermission(['Signin_Add'])"
         >
           <span style="font-size:350%">签&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;到</span>
         </el-button>
@@ -49,6 +49,7 @@
 
 
 <script>
+import checkPermission from "@/utils/permission"; // 权限判断函数
 import {
   GetSignInInfo,
   GetCategory,
@@ -71,6 +72,7 @@ export default {
     //this.IsChecked();
   },
   methods: {
+    checkPermission,
     IsChecked() {
       const { data } = IsChecked();
       this.BtnChecked = data;

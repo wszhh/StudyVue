@@ -1,7 +1,11 @@
 <template>
   <div class="zdy-border">
     <div id="head" class="table-head">
-      <el-button type="primary" @click="ApplyFormVisible=true">申请请假</el-button>
+      <el-button
+        type="primary"
+        @click="ApplyFormVisible=true"
+        :disabled="!checkPermission(['ApplyLeave_Add'])"
+      >申请请假</el-button>
       <div id="dialog">
         <!-- 申请请假的dialog -->
         <el-dialog title="申请请假" :visible.sync="ApplyFormVisible">
@@ -92,6 +96,14 @@
 
         <el-table-column label="姓名" width="100" align="center" prop="realName"></el-table-column>
 
+        <el-table-column
+          label="部门"
+          width="100"
+          align="center"
+          prop="departmentId"
+          :formatter="DepartmengFormat"
+        ></el-table-column>
+
         <el-table-column label="审批状态" width="90" align="center">
           <template slot-scope="{row}">
             <el-tag :type="tagType(row.leaveState)">{{stateFormat(row.leaveState)}}</el-tag>
@@ -170,6 +182,8 @@
 </template>
 
 <script>
+import { GetAllDepartments } from "@/api/department";
+import checkPermission from "@/utils/permission"; // 权限判断函数
 import {
   GetLeavesById,
   GetLeaveStartCategory,
@@ -207,14 +221,30 @@ export default {
         LeaveHalfDay: "全天",
         LeaveReason: null,
         LeaveTime: new Date()
-      }
+      },
+      options: null
     };
   },
   created() {
+    this.GetAllDepartments();
     this.GetLeaveStartCategory();
     this.fetchData();
   },
   methods: {
+    checkPermission,
+    async GetAllDepartments() {
+      const { data } = await GetAllDepartments();
+      this.options = data;
+    },
+    DepartmengFormat(row, column) {
+      var name = "暂未分配";
+      this.options.forEach(data => {
+        if (data.departmentId == row.departmentId) {
+          name = data.departmentName;
+        }
+      });
+      return name;
+    },
     fetchData() {
       this.listLoading = true;
       const { limit, page } = this.listQuery;

@@ -61,6 +61,7 @@
         </el-dialog>
       </div>
     </div>
+    <!-- 信息表格 -->
     <div id="table">
       <el-table
         v-loading="listLoading"
@@ -101,7 +102,15 @@
           </template>
         </el-table-column>
 
-       <el-table-column label="姓名" width="100" align="center" prop="realName"></el-table-column>
+        <el-table-column label="姓名" width="100" align="center" prop="realName"></el-table-column>
+
+        <el-table-column
+          label="部门"
+          width="100"
+          align="center"
+          prop="departmentId"
+          :formatter="DepartmengFormat"
+        ></el-table-column>
 
         <el-table-column label="审批状态" width="90" align="center">
           <template slot-scope="{row}">
@@ -169,6 +178,7 @@
         </el-table-column>
       </el-table>
     </div>
+    <!-- 分页 -->
     <div id="pagination">
       <pagination
         :total="total"
@@ -181,6 +191,7 @@
 </template>
 
 <script>
+import { GetAllDepartments } from "@/api/department";
 import {
   GetLeaves,
   GetLeaveStartCategory,
@@ -223,10 +234,24 @@ export default {
     };
   },
   created() {
+    this.GetAllDepartments();
     this.GetLeaveStartCategory();
     this.fetchData();
   },
   methods: {
+    async GetAllDepartments() {
+      const { data } = await GetAllDepartments();
+      this.options = data;
+    },
+    DepartmengFormat(row, column) {
+      var name = "暂未分配";
+      this.options.forEach(data => {
+        if (data.departmentId == row.departmentId) {
+          name = data.departmentName;
+        }
+      });
+      return name;
+    },
     fetchData() {
       this.listLoading = true;
       const { limit, page } = this.listQuery;

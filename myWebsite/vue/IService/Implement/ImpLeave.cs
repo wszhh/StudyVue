@@ -30,6 +30,7 @@ namespace vue.IService.Implement
                 {
                     UserId = user.Id,
                     RealName = user.RealName,
+                    DepartmentId = user.DepartmentId,
                     LeaveStartTime = LeaveStartTime,
                     LeaveEndTime = LeaveEndTime,
                     LeaveReason = leave.LeaveReason,

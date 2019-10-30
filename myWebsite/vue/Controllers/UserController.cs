@@ -477,12 +477,12 @@ namespace vue.Controllers
             };
         }
         /// <summary>
-        /// 员工管理-搜索同事列表
+        /// 查找同事-搜索同事列表
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize(Policy = "Staff_Find")]
+        [Authorize(Policy = "Colleague_Find")]
         public ReturnViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>> FindColleagueByName([FromBody]PaginationRequestViewModel<string> pagination)
         {
             return new ReturnViewModel<PaginationResponeViewModel<IEnumerable<UserInfoViewModel>>>()

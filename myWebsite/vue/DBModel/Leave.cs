@@ -18,5 +18,6 @@ namespace vue.DBModel
         public DateTime? ApprovalTime { get; set; }
         public string ApproverReason { get; set; }
         public string RealName { get; set; }
+        public int? DepartmentId { get; set; }
     }
 }

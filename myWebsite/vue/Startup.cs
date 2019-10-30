@@ -28,7 +28,6 @@ namespace vue
             Configuration = configuration;
         }
 
-
         // This method gets called by the runtime. Use this method to add services to the container.
         /// <summary>
         /// 
@@ -66,6 +65,7 @@ namespace vue
                 //员工资料管理
                 //-个人信息
                 options.AddPolicy("MyInfo_Get", policy => policy.RequireClaim("MyInfo", "Get"));
+                options.AddPolicy("MyInfo_Get", policy => policy.RequireClaim("MyInfo", "Get"));
                 options.AddPolicy("MyInfo_Set", policy => policy.RequireClaim("MyInfo", "Set"));
                 options.AddPolicy("MyInfo_SetPwd", policy => policy.RequireClaim("MyInfo", "SetPwd"));
                 //-查找同事
@@ -88,8 +88,20 @@ namespace vue
                 options.AddPolicy("Claim_Del", policy => policy.RequireClaim("Claim", "Del"));
                 options.AddPolicy("Claim_Set", policy => policy.RequireClaim("Claim", "Set"));
                 options.AddPolicy("Claim_SetRole", policy => policy.RequireClaim("Claim", "SetRole"));//分配角色
+                //申请请假
+                options.AddPolicy("ApplyLeave_Get", policy => policy.RequireClaim("ApplyLeave", "Get"));
+                options.AddPolicy("ApplyLeave_Add", policy => policy.RequireClaim("ApplyLeave", "Add"));
+                //审核请假
+                options.AddPolicy("CheckLeave_Get", policy => policy.RequireClaim("CheckLeave", "Get"));
+                options.AddPolicy("CheckLeave_Set", policy => policy.RequireClaim("CheckLeave", "Set"));//审批
+                //请假记录
+                options.AddPolicy("AllLeave_Get", policy => policy.RequireClaim("AllLeave", "Get"));
+                //考勤管理
+                options.AddPolicy("Signin_Get", policy => policy.RequireClaim("Signin", "Get"));
+                options.AddPolicy("Signin_Add", policy => policy.RequireClaim("Signin", "Add"));//签到
+                //查看考勤记录
+                options.AddPolicy("CheckAttendance_Get", policy => policy.RequireClaim("CheckAttendance", "Get"));
             });
-
             #endregion
 
             #region CORS

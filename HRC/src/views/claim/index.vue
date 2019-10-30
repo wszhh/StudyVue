@@ -70,7 +70,6 @@
     </el-table>
   </div>
 </template>
-
 <script>
 import {
   GetClaimTree,

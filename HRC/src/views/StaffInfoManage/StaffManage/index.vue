@@ -693,7 +693,6 @@ export default {
       });
       return name;
     },
-
     handleAvatarSuccess(res, file) {
       this.$message.success("照片更新成功");
       //this.imageUrl = URL.createObjectURL(file.raw);

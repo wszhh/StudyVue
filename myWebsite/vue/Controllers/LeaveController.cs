@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ViewModel;
@@ -28,56 +29,60 @@ namespace vue.Controllers
         }
 
         /// <summary>
-        /// 申请请假
+        /// 申请请假-申请请假
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Policy = "ApplyLeave_Add")]
         public async Task<ReturnViewModel<bool>> AddLeave([FromBody]LeaveViewModel leave)
         {
             return _leave.AddLeave(leave, await _userManager.FindByIdAsync(GetIdByToken()));
         }
 
-
         /// <summary>
-        /// 审批请假
+        /// 申请请假-基于用户id获取请假表
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Policy = "ApplyLeave_Get")]
+        public ReturnViewModel<PaginationResponeViewModel<IEnumerable<Leave>>> GetLeavesById([FromBody]PaginationRequestViewModel pagination)
+        {
+            return _leave.GetLeavesById(pagination, GetIdByToken());
+        }
+
+        /// <summary>
+        /// 请假审核-审批请假
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Policy = "CheckLeave_Set")]
         public async Task<ReturnViewModel<bool>> CheckLeave([FromBody]Leave leave)
         {
             return _leave.CheckLeave(leave, await _userManager.FindByIdAsync(GetIdByToken()));
         }
 
         /// <summary>
-        /// 获取审批表
+        /// 请假审核-获取待审批表
         /// 2019年10月24日 10时05分23秒
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Policy = "CheckLeave_Get")]
         public ReturnViewModel<PaginationResponeViewModel<IEnumerable<Leave>>> GetCheckLeaves(PaginationRequestViewModel pagination)
         {
             return _leave.GetCheckLeaves(pagination);
         }
 
         /// <summary>
-        /// 获取请假表
+        /// 请假记录-获取请假表
         /// 2019年10月24日 10时05分44秒
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Policy = "AllLeave_Get")]
         public ReturnViewModel<PaginationResponeViewModel<IEnumerable<Leave>>> GetLeaves([FromBody]PaginationRequestViewModel pagination)
         {
             return _leave.GetLeaves(pagination);
-        }
-
-        /// <summary>
-        /// 基于用户id获取请假表
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public ReturnViewModel<PaginationResponeViewModel<IEnumerable<Leave>>> GetLeavesById([FromBody]PaginationRequestViewModel pagination)
-        {
-            return _leave.GetLeavesById(pagination, GetIdByToken());
         }
 
         /// <summary>

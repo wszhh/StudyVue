@@ -89,6 +89,14 @@
           </template>
         </el-table-column>
 
+        <el-table-column
+          label="部门"
+          width="100"
+          align="center"
+          prop="departmentId"
+          :formatter="DepartmengFormat"
+        ></el-table-column>
+
         <el-table-column label="审批状态" width="90" align="center">
           <template slot-scope="{row}">
             <el-tag :type="tagType(row.leaveState)">{{stateFormat(row.leaveState)}}</el-tag>
@@ -154,9 +162,14 @@
           />
         </el-table-column>
 
-        <el-table-column label="操作" align="center" fixed="right">
+        <el-table-column
+          label="操作"
+          align="center"
+          fixed="right"
+          v-if="checkPermission(['CheckLeave_Set'])"
+        >
           <template slot-scope="{row}">
-            <el-button @click="ChangeLeave(row)" type="text">
+            <el-button @click="ChangeLeave(row)" type="text" v-permission="['CheckLeave_Set']">
               <svg-icon icon-class="edit-fill" />
             </el-button>
           </template>
@@ -175,6 +188,8 @@
 </template>
 
 <script>
+import { GetAllDepartments } from "@/api/department";
+import checkPermission from "@/utils/permission"; // 权限判断函数
 import {
   GetCheckLeaves,
   GetLeaveStartCategory,
@@ -216,10 +231,25 @@ export default {
     };
   },
   created() {
+    this.GetAllDepartments();
     this.GetLeaveStartCategory();
     this.fetchData();
   },
   methods: {
+    checkPermission,
+    async GetAllDepartments() {
+      const { data } = await GetAllDepartments();
+      this.options = data;
+    },
+    DepartmengFormat(row, column) {
+      var name = "暂未分配";
+      this.options.forEach(data => {
+        if (data.departmentId == row.departmentId) {
+          name = data.departmentName;
+        }
+      });
+      return name;
+    },
     fetchData() {
       this.listLoading = true;
       const { limit, page } = this.listQuery;
@@ -272,7 +302,7 @@ export default {
     ChangeLeave(row) {
       this.CheckForm.LeaveReason = row.leaveReason;
       this.CheckForm.LeaveId = row.leaveId;
-      this.CheckFormVisible = true;
+      this.CheckFormVisible = checkPermission(["CheckLeave_Set"]);
     }
   }
 };

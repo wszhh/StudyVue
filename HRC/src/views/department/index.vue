@@ -2,9 +2,9 @@
   <div id="DepartmentManage " class="zdy-border">
     <!-- 功能按钮 -->
     <div class="table-head">
-      <el-button v-permission="['Department_Add']" type="primary" @click="open">增加部门</el-button>
+      <el-button :disabled="!checkPermission(['Department_Add'])" type="primary" @click="open">增加部门</el-button>
       <el-tooltip class="item" effect="dark" content="没写" placement="bottom">
-        <el-button v-permission="['Department_Del']" type="danger">删除选中</el-button>
+        <el-button :disabled="!checkPermission(['Department_Del'])" type="danger">删除选中</el-button>
       </el-tooltip>
     </div>
     <!-- 部门信息表格 -->
@@ -131,7 +131,7 @@ export default {
       dialogVisible: false,
       list: null,
       listLoading: true,
-      total: 0, 
+      total: 0,
       listQuery: {
         page: 1,
         limit: 10

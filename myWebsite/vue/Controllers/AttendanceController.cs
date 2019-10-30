@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using vue.Areas.Identity.Data;
@@ -30,7 +31,8 @@ namespace vue.Controllers
         }
 
         /// <summary>
-        /// 获取类别用于显示
+        /// 获取类别用于展示
+        /// 2019-10-30 15:52:55
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -41,10 +43,12 @@ namespace vue.Controllers
 
 
         /// <summary>
-        /// 获取所有考勤信息
+        /// 查看考勤信息-获取所有考勤信息
+        /// 2019-10-30 15:45:07
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Policy = "CheckAttendance_Get")]
         public ReturnViewModel<IEnumerable<AttendanceSheet>> GetAttendances()
         {
             return new ReturnViewModel<IEnumerable<AttendanceSheet>>
@@ -55,7 +59,8 @@ namespace vue.Controllers
         }
 
         /// <summary>
-        /// 是否已经签到过
+        /// 是否已经签到过-暂时不用
+        /// 2019-10-30 15:45:34
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -63,10 +68,11 @@ namespace vue.Controllers
 
 
         /// <summary>
-        /// 签到
+        /// 签到-签到
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Policy = "Signin_Add")]
         public async Task<ReturnViewModel<bool>> Checkin()
         {
             string id = GetIdByToken();
@@ -84,17 +90,18 @@ namespace vue.Controllers
 
 
         /// <summary>
-        /// 获取本月考勤信息用于日历显示
+        /// 签到-获取本月考勤信息用于日历显示
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [Authorize(Policy = "Signin_Get")]
         public ReturnViewModel<IEnumerable<SigninModel>> GetSignInInfo()
         {
             string id = GetIdByToken();
             if (!string.IsNullOrEmpty(id))
             {
                 DateTime beginTime = DateTime.Parse(DateTime.Now.ToString().Substring(0, 7) + "-01");//本月初
-                                                                                                     //DateTime endTime = DateTime.Parse(beginTime.AddMonths(1).AddDays(-1).ToShortDateString());//本月最后一天
+                //DateTime endTime = DateTime.Parse(beginTime.AddMonths(1).AddDays(-1).ToShortDateString());//本月最后一天
                 DateTime endTime = DateTime.Parse(DateTime.Now.ToShortDateString());//本月最后一天
                 List<SigninModel> dateList = new List<SigninModel>();
                 for (DateTime dt = beginTime; dt <= endTime; dt = dt.AddDays(1))
