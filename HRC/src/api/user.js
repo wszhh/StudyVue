@@ -61,3 +61,14 @@ export function AddStaff(data) {
     data
   })
 }
+
+
+
+
+//test
+export function test() {
+  return request({
+    url: '/home/AnyOne',
+    method: 'post'
+  })
+}

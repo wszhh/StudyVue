@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using vue.Areas.Identity.Data;
+using vue.Controllers;
 using vue.DBModel;
 using vue.IService;
 using vue.IService.Implement;
@@ -205,7 +206,7 @@ namespace vue
             });
 
             #endregion
-
+            services.AddSignalR();//test
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
@@ -232,6 +233,10 @@ namespace vue
             #endregion
 
             #endregion
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<SignalrHubs>("/api/signalrHubs");
+            });
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseStaticFiles();

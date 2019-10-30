@@ -15,6 +15,7 @@
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
   },
   "dependencies": {
+    "@aspnet/signalr": "^1.1.4",
     "axios": "0.18.1",
     "babel-polyfill": "^6.26.0",
     "element-ui": "^2.12.0",
