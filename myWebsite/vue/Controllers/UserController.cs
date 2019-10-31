@@ -576,17 +576,9 @@ namespace vue.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "Staff_Set")]
-        public ReturnViewModel<IActionResult> SetStaffInfo([FromBody]UserInfoViewModel NewUserInfo)
+        public ReturnViewModel<bool> SetStaffInfo([FromBody]UserInfoViewModel NewUserInfo)
         {
-            if (NewUserInfo != null)
-            {
-                return _aspNetUsers.setStaffInfos(NewUserInfo.Id, NewUserInfo);
-            }
-            return new ReturnViewModel<IActionResult>()
-            {
-                code = (int)codes.ChangeUserInfoError,
-                message = "更改个人信息失败，请检查是否填写正确"
-            };
+            return _aspNetUsers.setStaffInfos(NewUserInfo.Id, NewUserInfo);
         }
 
         /// <summary>

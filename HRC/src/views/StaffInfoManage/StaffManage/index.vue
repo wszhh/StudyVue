@@ -12,7 +12,6 @@
                   <el-upload
                     ref="upload"
                     :action="ActionUrl"
-                    :before-upload="isHaveImg"
                     :on-change="checkImg"
                     :on-success="onSuccess"
                     :file-list="fileList"
@@ -179,13 +178,23 @@
           </div>
         </el-dialog>
         <!-- 编辑员工的dialog -->
-        <el-dialog title="编辑员工" :visible.sync="ChangedialogFormVisible" width="70%" top="5vh">
-          <!-- 表单开始 -->
-          <el-form ref="ChangeUserInfo" :model="UserInfo" label-width="120px">
+        <el-dialog
+          :title="disable.checkStaffSet == true ? '编辑员工' : '查看员工'"
+          :visible.sync="ChangedialogFormVisible"
+          width="70%"
+          top="5vh"
+        >
+          <!-- 编辑员工表单开始 -->
+          <el-form
+            ref="ChangeUserInfo"
+            :model="UserInfo"
+            label-width="120px"
+            :disabled="!disable.checkStaffSet"
+          >
             <el-row>
               <el-col :span="12">
                 <el-form-item label="照片">
-                  <!-- 2019年10月16日 10时22分07秒 编辑照片不写了 -->
+                  <!-- 2019年10月16日 10时22分07秒 编辑员工照片就不写了 -->
                   <div class="demo-image__preview">
                     <el-image style="width: 100px; height: 135px;" :src="imgSrc"></el-image>
                   </div>
@@ -328,42 +337,54 @@
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-form-item>
-              <!-- <el-button type="primary" @click="OnAddSubmit">保存</el-button> -->
-            </el-form-item>
           </el-form>
           <!-- 表单结束 -->
           <div slot="footer" class="dialog-footer">
             <el-button @click="ChangedialogFormVisible = false">取 消</el-button>
-            <el-button type="primary" @click="OnChangeSubmit()">确 定</el-button>
+            <el-button
+              type="primary"
+              @click="OnChangeSubmit()"
+              :disabled="!disable.checkStaffSet"
+            >提 交</el-button>
           </div>
         </el-dialog>
       </div>
 
-      <!-- 其它功能选项 -->
+      <!-- 其它选项 -->
       <div class="table-head">
         <!-- 搜索框 -->
         <el-input
-          v-permission="['Staff_Find']"
           placeholder="请输入..."
           class="input-with-select"
           clearable
           v-model="OrderPropKeyword.keyword"
           style="width: 350px;"
           @clear="GetList"
+          :disabled="!disable.checkStaffFind"
         >
-          <el-select v-model="OrderPropKeyword.select" slot="prepend" style="width:80px">
+          <el-select
+            v-model="OrderPropKeyword.select"
+            slot="prepend"
+            style="width:80px"
+            :disabled="!disable.checkStaffFind"
+          >
             <el-option label="编号" value="id"></el-option>
             <el-option label="姓名" value="realName"></el-option>
             <el-option label="部门" value="departmentId"></el-option>
           </el-select>
-          <el-button slot="append" icon="el-icon-search" @click="GetList" @keyup.enter="GetList"></el-button>
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+            @click="GetList"
+            @keyup.enter="GetList"
+            :disabled="!disable.checkStaffFind"
+          ></el-button>
         </el-input>
-        <!-- 添加员工 -->
+        <!-- 添加员工按钮 -->
         <el-button
           type="primary"
-          v-permission="['Staff_Add']"
           @click="AdddialogFormVisible = true"
+          :disabled="!checkPermission(['Staff_Add'])"
         >添加员工</el-button>
       </div>
     </div>
@@ -381,8 +402,6 @@
         height="65vh"
         @sort-change="tableOrder"
       >
-        <!-- <el-table-column type="selection" width="45" align="center"></el-table-column> -->
-
         <el-table-column align="center" label="编号" width="95" prop="id" sortable></el-table-column>
 
         <el-table-column align="center" label="姓名" width="95">
@@ -477,6 +496,7 @@
 </template>
 
 <script>
+import checkPermission from "@/utils/permission"; // 权限判断函数
 import Pagination from "@/components/Pagination";
 import { GetAllDepartments } from "@/api/department";
 import {
@@ -489,12 +509,10 @@ import {
 } from "@/api/StaffInfoManage";
 import { getToken } from "@/utils/auth";
 import { CheckUserName, AddStaff } from "@/api/user";
-import permission from "@/directive/permission/index.js"; // 权限判断指令
 const state = {
   token: getToken()
 };
 export default {
-  directives: { permission },
   components: { Pagination },
   filters: {
     statusFilter(status) {
@@ -521,34 +539,45 @@ export default {
         joinTime: null,
         photo: ""
       },
+      // 照片相关
       error: {
         nameError: "",
         UploadError: "只能上传Jpeg格式，且<100k"
       },
-      Authorization: "Bearer " + state.token,
+      Authorization: "Bearer " + state.token, //token
       PhotoArray: [],
-      ActionUrl: process.env.VUE_APP_BASE_API + "/user/setStaffphoto",
+      ActionUrl: process.env.VUE_APP_BASE_API + "/user/setStaffphoto", //给上传照片提供地址
       flag: false,
-      imgSrc: "",
-      fileList: [],
+      imgSrc: "", //照片链接
+      fileList: [], //上传照片的文件列表
+      //部门的select
       options: null,
+      // 表格
       list: null,
       listLoading: true,
-      //分页相关
+      //分页
       total: 0,
       listQuery: {
         page: 1,
         limit: 10
       },
+      // 查找同事
       FindByname: "",
       formLabelWidth: "120px",
+      // dialog开关相关
       AdddialogFormVisible: false,
       ChangedialogFormVisible: false,
+      // 排序相关
       OrderPropKeyword: {
         Order: "",
         prop: "",
         Keyword: "",
         select: "realName"
+      },
+      // 用得比较多的这种权限判断就这样处理
+      disable: {
+        checkStaffSet: checkPermission(["Staff_Set"]),
+        checkStaffFind: checkPermission(["Staff_Find"])
       }
     };
   },
@@ -557,6 +586,7 @@ export default {
     this.GetList();
   },
   methods: {
+    checkPermission,
     //编辑员工
     async ChangeUserInfo(row) {
       this.ChangedialogFormVisible = true;
@@ -571,10 +601,8 @@ export default {
     },
     //上传图片成功
     onSuccess(response) {
-      //console.log(response);
       this.$refs.upload.clearFiles();
     },
-    isHaveImg(file) {},
     checThiskUserName(value) {
       if (value.length <= 15 && value.length >= 5) {
         CheckUserName({ userName: value.toString() }).then(Response => {
@@ -597,7 +625,6 @@ export default {
     checkImg(file, fileList) {
       const isJPG = file.raw.type === "image/jpeg";
       const isLt2M = file.raw.size < 102400;
-
       if (!isJPG) {
         this.$message.error("上传的照片只能是 JPG 格式!");
         this.$refs.upload.clearFiles();
@@ -611,15 +638,21 @@ export default {
       }
       return isJPG && isLt2M;
     },
+    // 修改员工信息 2019-10-31 08:52:35
     OnChangeSubmit() {
       this.$refs.ChangeUserInfo.validate(validate => {
         if (validate) {
-          SetStaffInfo(this.UserInfo);
+          SetStaffInfo(this.UserInfo).then(x => {
+            if (x.data) {
+              this.ChangedialogFormVisible = false;
+            }
+          });
         }
       });
     },
+    // 添加员工 2019-10-31 08:52:07
     OnAddSubmit() {
-      //再次检查用户名
+      // 再次检查用户名
       var value = this.UserInfo.userName;
       if (value.length <= 15 && value.length >= 5) {
         CheckUserName({ userName: value }).then(Response => {
@@ -648,8 +681,7 @@ export default {
         AddStaff(this.UserInfo).then(res => {
           if (res.code == 20000) {
             this.GetList();
-            //此时员工文字信息添加成功 开始尝试添加照片
-            //先检查照片
+            //此时员工文字信息添加成功 开始尝试添加照片（如果有的话）
             //检查照片
             this.$refs.upload.submit();
             if (!this.flag) {
@@ -701,7 +733,6 @@ export default {
     FindColleagueByName() {
       if (false) {
         this.$message.error("姓名不得为空");
-        // return false;
       } else {
         this.listLoading = true;
         const { limit, page } = this.listQuery;
@@ -730,7 +761,7 @@ export default {
         })
         .catch(_ => {});
     },
-    //给工资添加样式
+    //给工资数字添加样式
     salaryStyle(salary) {
       if (salary < 5000) {
         return "color:blue";
@@ -740,7 +771,7 @@ export default {
         return "color:red";
       }
     },
-    //表格排序事件
+    //表格排序
     async tableOrder({ prop, order }) {
       this.OrderPropKeyword = {
         prop,

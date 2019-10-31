@@ -13,8 +13,8 @@ using codes = ViewModel.StateCodes.StateCode;
 
 namespace vue.Controllers
 {
-    [Route("api/[controller]/[action]")]
     [ApiController]
+    [Route("api/[controller]/[action]")]
     public class ClaimController : ControllerBase
     {
         private readonly IClaim _claim;
@@ -29,7 +29,8 @@ namespace vue.Controllers
         }
 
         /// <summary>
-        /// 获取权限树
+        /// 获取权限Tree
+        /// 2019-10-31 09:25:25
         /// </summary>
         /// <param name="role"></param>
         /// <returns></returns>
@@ -37,12 +38,7 @@ namespace vue.Controllers
         [Authorize(Policy = "Claim_Get")]
         public async Task<IActionResult> GetClaimTree([FromBody] IdentityRole role)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return NotFound();
-            //}
-
-            //所有子结点
+            //所有子节点
             var ChildrenClaims = _claim.ClaimList.Select(a => new TreeViewModel()
             {
                 Id = a.Id,
@@ -57,7 +53,7 @@ namespace vue.Controllers
                 new TreeViewModel{Id=301,Type="MyInfo",Label="个人信息"},
                 new TreeViewModel{Id=401,Type="Colleague",Label="查找同事"},
                 new TreeViewModel{Id=501,Type="Claim",Label="权限管理"},
-                new TreeViewModel{Id=601,Type="Salary",Label="薪资管理"},
+                //new TreeViewModel{Id=601,Type="Salary",Label="薪资管理"},
                 new TreeViewModel{Id=701,Type="ApplyLeave",Label="申请请假"},
                 new TreeViewModel{Id=801,Type="CheckLeave",Label="审核请假"},
                 new TreeViewModel{Id=901,Type="AllLeave",Label="请假记录"},
@@ -119,43 +115,56 @@ namespace vue.Controllers
 
         /// <summary>
         /// 编辑角色的声明
+        /// 2019-10-31 09:24:53
         /// </summary>
         /// <param name="claims"></param>
         /// <returns></returns>
         [HttpPost]
         [Authorize(Policy = "Claim_Set")]
-        public async Task<ReturnViewModel<List<ClaimsViewModel>>> SetRoleClaim([FromBody] List<ClaimsViewModel> claims)
+        public async Task<ReturnViewModel<bool>> SetRoleClaim([FromBody] List<ClaimsViewModel> claims)
         {
-            //bool flag1 = false, flag2 = false, flag3 = false;
             if (!claims.Any())
             {
-                return new ReturnViewModel<List<ClaimsViewModel>>()
+                return new ReturnViewModel<bool>()
                 {
                     code = (int)codes.ChangeClaimError,
+                    data = false,
                     message = "编辑失败"
                 };
             }
-            IdentityRole role = await _roleManager.FindByIdAsync(claims.Where(x => x.RoleId != null).First().RoleId);
-            //先取出来
-            var DbClaims = await _roleManager.GetClaimsAsync(role);
-            //把原有的全部删掉
-            foreach (Claim item in DbClaims)
+            try
             {
-                var result = await _roleManager.RemoveClaimAsync(role, item);
+                IdentityRole role = await _roleManager.FindByIdAsync(claims.Where(x => x.RoleId != null).First().RoleId);
+                //先取出来
+                var DbClaims = await _roleManager.GetClaimsAsync(role);
+                //把原有的全部删掉
+                foreach (Claim item in DbClaims)
+                {
+                    var result = await _roleManager.RemoveClaimAsync(role, item);
 
+                }
+                //把更改后的全部添加进去
+                foreach (Claim item in claims.Where(x => x.RoleId != null).Select(x => new Claim(type: x.Type, value: x.Value)))
+                {
+                    var result = await _roleManager.AddClaimAsync(role, item);
+
+                }
             }
-            //把更改后的全部添加进去
-            foreach (Claim item in claims.Where(x => x.RoleId != null).Select(x => new Claim(type: x.Type, value: x.Value)))
+            catch (System.Exception)
             {
-                var result = await _roleManager.AddClaimAsync(role, item);
-
+                return new ReturnViewModel<bool>()
+                {
+                    code = (int)codes.ChangeClaimError,
+                    data = false,
+                    message = "编辑失败"
+                };
             }
-            return new ReturnViewModel<List<ClaimsViewModel>>()
+            return new ReturnViewModel<bool>()
             {
                 code = (int)codes.Success,
-                message = $"\"{role.Name}\"编辑成功"
+                data = true,
+                message = "编辑成功"
             };
-
         }
 
         /// <summary>

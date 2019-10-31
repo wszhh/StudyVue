@@ -25,11 +25,11 @@
       <el-tree :data="Tree" show-checkbox node-key="id" ref="tree"></el-tree>
       <span slot="footer" class="dialog-footer" template>
         <el-button @click="ClaimdialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="ClaimdialogVisible = true,getCheckedNodes()">确 定</el-button>
+        <el-button type="primary" @click="getCheckedNodes()">提 交</el-button>
       </span>
     </el-dialog>
     <!-- 角色表格 -->
-    <!-- 暂时就是这么个样式 以后再改 2019年10月15日 21时56分21秒-->
+    <!-- 暂时就是这么个样子 以后想改了再改 2019年10月15日 21时56分21秒-->
     <el-table
       :data="tableData"
       border
@@ -134,8 +134,13 @@ export default {
       this.RoleName = `编辑\"${row.name}\"的权限`;
       this.$refs.tree.setCheckedKeys(data.result);
     },
+    // 编辑角色的声明
     async getCheckedNodes() {
-      const { data } = await SetRoleClaim(this.$refs.tree.getCheckedNodes());
+      await SetRoleClaim(this.$refs.tree.getCheckedNodes()).then(x => {
+        if (x.data) {
+          this.ClaimdialogVisible = false;
+        }
+      });
     },
     async getTableData() {
       const { data } = await GetRoles();

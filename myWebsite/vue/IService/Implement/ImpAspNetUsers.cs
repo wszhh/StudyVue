@@ -99,8 +99,17 @@ namespace vue.IService.Implement
         /// <param name="userId"></param>
         /// <param name="NewUserInfo"></param>
         /// <returns></returns>
-        public ReturnViewModel<IActionResult> setStaffInfos(string userId, UserInfoViewModel NewUserInfo)
+        public ReturnViewModel<bool> setStaffInfos(string userId, UserInfoViewModel NewUserInfo)
         {
+            if (NewUserInfo == null)
+            {
+                return new ReturnViewModel<bool>()
+                {
+                    code = (int)codes.ChangeUserInfoError,
+                    data = false,
+                    message = "更改失败，请检查是否填写正确"
+                };
+            }
             try
             {
                 var oldUser = db.AspNetUsers.Where(x => x.Id == userId).FirstOrDefault();
@@ -117,9 +126,9 @@ namespace vue.IService.Implement
             }
             catch (Exception)
             {
-                return new ReturnViewModel<IActionResult>() { code = (int)codes.TokenOrInfoError, message = "所填写的内容不正确不正确" };
+                return new ReturnViewModel<bool>() { code = (int)codes.TokenOrInfoError, data = false, message = "更改失败，请检查是否填写正确" };
             }
-            return new ReturnViewModel<IActionResult>() { code = (int)codes.Success, message = "员工信息更改成功" };
+            return new ReturnViewModel<bool>() { code = (int)codes.Success, data = true, message = "员工信息更改成功" };
         }
 
         /// <summary>
