@@ -90,7 +90,7 @@ namespace vue.IService.Implement
                 code = (int)codes.Success,
                 data = new PaginationResponeViewModel<IEnumerable<Leave>>
                 {
-                    list = data.Skip(pagination.page).Take(pagination.limit),
+                    list = data.OrderByDescending(x=>x.LeaveTime).Skip(pagination.page).Take(pagination.limit),
                     total = data.Count()
                 }
             };

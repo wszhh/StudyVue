@@ -11,7 +11,6 @@ namespace vue.Areas.Identity.Data
     {
         private HRCContext db = new HRCContext();
 
-
         public NewUser()
         {
             var result = db.AspNetUsers.Max(x => x.Id);
